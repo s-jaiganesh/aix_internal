@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  remote_user: jai
+  remote_user: 
   become: true
   become_user: root
   gather_facts: yes
