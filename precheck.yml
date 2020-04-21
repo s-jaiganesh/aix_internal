@@ -2,18 +2,20 @@
 - hosts: all
   remote_user: "{{ lookup('env','USER') }}"
   become: true
-  become_user:  root
+  become_user: root
   gather_facts: yes
   vars:
     file_name: /path/to/log/{{ inventory_hostname }}
-  tasks:
+ 
+  tasks:
     - name: "Getting current timestamp"
       set_fact:
         timestamp_fact: "{{ lookup('pipe', 'date +%Y-%m-%d-%H-%M-%S') }}"
 
-    - debug: var="{{ timestamp_fact }}"
+    - debug: 
+        var: "{{ timestamp_fact }}"
 
-    - name: Create a Directory with Server name
+    - name: Create a Directory with Server name
       file:
         path: "{{ file_name }}_{{ timestamp_fact }}"
         state: directory
