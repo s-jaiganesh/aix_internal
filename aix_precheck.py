@@ -59,7 +59,7 @@ def bosboot(module):
         rc, stdout, stderr = module.run_command("%s -ad %s" % (bosboot_cmd, '/dev/'.join(pvs_to_run_bosboot)))
         if rc != 0:
             changed = False
-            module.fail_json(msg="Unable to run bosboot '%s'." % rc=rc, stdout=stdout, stderr=stderr)
+            module.fail_json(msg="Unable to run bosboot '%s' '%s' '%s'" % rc=rc, stdout=stdout, stderr=stderr)
         else:
             changed = True
             bosboot_msg = "Bosboot executed on '%s'"
@@ -68,7 +68,7 @@ def bosboot(module):
         rc, stdout, stderr = module.run_command("%s -ad %s" % (bosboot_cmd, '/dev/'.join(pvs_to_run_bosboot)))
         if rc != 0:
             changed = False
-            module.fail_json(msg="Unable to run bosboot '%s'." % rc=rc, stdout=stdout, stderr=stderr)
+            module.fail_json(msg="Unable to run bosboot '%s' '%s' '%s'" % rc=rc, stdout=stdout, stderr=stderr)
         else:
             changed = True
             bosboot_msg = "Bosboot executed on '%s'"
