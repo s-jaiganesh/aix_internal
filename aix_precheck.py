@@ -31,6 +31,7 @@ EXAMPLES = r'''
 - name: Create a volume group datavg
   aix_precheck:
     name: bosboot
+    bootlist: True
     
 '''
 
@@ -38,7 +39,7 @@ RETURN = r''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
 
-def bosboot(module):
+def bosboot(module, bootlist_bool):
 
     # Define pvs_to_run_bosboot (list of physical volumes to run bosboot).
     lslv_cmd = module.get_bin_path('lslv', True)
@@ -47,8 +48,15 @@ def bosboot(module):
         module.fail_json(msg="Failing to execute '%s' command." % lslv_cmd)
 
     pvs_to_run_bosboot = []
-    for line in hd5_pvs.splitlines()[2:]:
-        pvs_to_run_bosboot.append(line.split()[0])   
+    for line in b.splitlines():
+    if 'hdisk' in line:
+        fields = line.strip().split()
+        pvs_to_run_bosboot.append(fields[0])
+        hdisks = fields[0]
+        state = fields[1]
+    
+    length = len(pvs_to_run_bosboot)
+    bosboot_cmd = ("%s %s %s" % ('bootlist -m normal', '/dev/' + (hdisk[0]), '/dev/' + (hdisk[1])))
     
     if len(pvs_to_run_bosboot) <= 0:
         changed = False
@@ -56,16 +64,19 @@ def bosboot(module):
         return changed, msg
     elif len(pvs_to_run_bosboot) == 2:
         bosboot_cmd = module.get_bin_path('bosboot', True)
-        rc, stdout, stderr = module.run_command("%s -ad %s" % (bosboot_cmd, '/dev/'.join(pvs_to_run_bosboot)))
+        for disk in pvs_to_run_bosboot:
+            rc, stdout, stderr = module.run_command("%s -ad %s" % (bosboot_cmd, 'bosboot', '/dev/' + disk))
+
         if rc != 0:
             changed = False
             module.fail_json(msg="Unable to run bosboot")
         else:
             changed = True
             bosboot_msg = "Bosboot executed"
+
     elif len(pvs_to_run_bosboot) == 1:
         bosboot_cmd = module.get_bin_path('bosboot', True)
-        rc, stdout, stderr = module.run_command("%s -ad %s" % (bosboot_cmd, '/dev/'.join(pvs_to_run_bosboot)))
+        rc, stdout, stderr = module.run_command("%s -ad %s" % (bosboot_cmd, 'bosboot', '/dev/' + (pvs_to_run_bosboot[0])))
         if rc != 0:
             changed = False
             module.fail_json(msg="Unable to run bosboot") 
@@ -78,19 +89,21 @@ def bosboot(module):
         module.fail_json(msg="Unable to run bosboot")
 
     msg = bosboot_msg
-    return changed, msg
+    return changed, msg, length
     
     
 def main():
     module = AnsibleModule(
         argument_spec=dict(
             name=dict(type='str', required=True),
+            bootlist=dict(type='bool', default=False),
         ),
         supports_check_mode=True,
     )
 
-    name = module.params['name']    
-    changed, msg = bosboot(module)
+    name = module.params['name']
+    bootlist = module.params['bootlist']
+    changed, msg = bosboot(module, bootlist)
 
 if __name__ == '__main__':
     main()
