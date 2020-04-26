@@ -30,7 +30,8 @@
 
     - name: Run bosboot
       aix_precheck:
-        name: bosboot
+         name: bosboot
+         bootlist: False
       delegate_to: "127.0.0.1"
       register: bosboot
 
