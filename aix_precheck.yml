@@ -1,13 +1,13 @@
 ---
-- hosts: all
-  remote_user: "{{ lookup('env','USER') }}"
+- hosts: localhost
+  remote_user:
   gather_facts: yes
-  
+
   tasks:
     - name: Run bosboot & bootlist
       bosboot:
-         name: run
-         bootlist: True
+        name: run
+        bootlist: True
       delegate_to: "127.0.0.1"
       register: result
       become: true
@@ -15,4 +15,3 @@
     - name: debug
       debug:
         var: result
-
