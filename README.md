@@ -9,4 +9,5 @@ instructions:-
 
 to check syntax error in yaml file:-
   1. yum install yamllint
-  2. # yamllint aix_precheck.yml
+  2. run below command
+  # yamllint aix_precheck.yml
