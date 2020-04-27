@@ -1,4 +1,28 @@
 #!/usr/bin/python
+import re
+
+a = open("lsdev.txt", "r")
+b = a.read()
+hdisk = []
+for line in b.splitlines():
+    if 'hdisk' in line:
+        fields = line.strip().split()
+        hdisk.append(fields[0])
+        disks = fields[0]
+        state = fields[1]
+        print (disks)
+length = len(hdisk)
+print (length)
+bosboot_cmd = ("%s %s %s" % ('bootlist -m normal', '/dev/' + (hdisk[0]), '/dev/' + (hdisk[1])))
+print (bosboot_cmd)
+
+#txt = open("lsdev.txt", "r")
+#for line in txt:
+#    fields = line.strip().split()
+    # Array indices start at 0 unlike AWK
+#    print(fields[0])
+root@jaiganesh-Inspiron-N5050:/home/jaiganesh/ansible/library# cat aix_precheck.py 
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import, division, print_function
@@ -48,11 +72,11 @@ def bosboot(module, bootlist_bool):
         module.fail_json(msg="Failing to execute '%s' command." % lslv_cmd)
 
     pvs_to_run_bosboot = []
-    for line in b.splitlines():
+    for line in hd5_pvs.splitlines():
         if 'hdisk' in line:
             fields = line.strip().split()
             pvs_to_run_bosboot.append(fields[0])
-            hdisks = fields[0]
+            hdisk = fields[0]
             state = fields[1]
     
     length = len(pvs_to_run_bosboot)
@@ -76,7 +100,7 @@ def bosboot(module, bootlist_bool):
 
     elif len(pvs_to_run_bosboot) == 1:
         bosboot_cmd = module.get_bin_path('bosboot', True)
-        rc, stdout, stderr = module.run_command("%s -ad %s" % (bosboot_cmd, 'bosboot', '/dev/' + (pvs_to_run_bosboot[0])))
+        rc, stdout, stderr = module.run_command("%s -ad %s" % (bosboot_cmd, '/dev/' + (pvs_to_run_bosboot[0])))
         if rc != 0:
             changed = False
             module.fail_json(msg="Unable to run bosboot") 
@@ -96,14 +120,12 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             name=dict(type='str', required=True),
-            bootlist=dict(type='bool', default=False),
         ),
         supports_check_mode=True,
     )
 
     name = module.params['name']
-    bootlist = module.params['bootlist']
-    changed, msg = bosboot(module, bootlist)
+    changed, msg, length = bosboot(module)
 
 if __name__ == '__main__':
     main()
