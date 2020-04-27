@@ -7,7 +7,7 @@
     - name: Run bosboot & bootlist
       bosboot:
          name: run
-         bootlist: true
+         bootlist: True
       delegate_to: "127.0.0.1"
       register: result
       become: true
