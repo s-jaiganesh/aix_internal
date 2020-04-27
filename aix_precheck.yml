@@ -8,10 +8,16 @@
       bosboot:
         name: run
         bootlist: True
-      delegate_to: "127.0.0.1"
-      register: result
+      register: boot_info
       become: true
-
-    - name: debug
+    - name: get hdisk info
+      devices:
+        name: disk
+      register: disk_info
+      become: true
+    - name: debug boot
       debug:
-        var: result
+        var: boot_info
+    - name: debug disk
+      debug:
+        var: disk_info
