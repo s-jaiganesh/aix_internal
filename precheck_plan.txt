@@ -1,0 +1,80 @@
+import re
+
+#oslevel -sq
+
+#df -k
+
+# hdisk
+for line in out.splitlines():
+    if 'hdisk' in line:
+        fields = line.strip().split()
+        hdisk = fields[0]
+        state = fields[1]
+
+disk_lenth = len(hdisk)
+
+#lspv count
+
+# fcs
+for line in out.splitlines():
+    if 'fcs' in line:
+        fields = line.strip().split()
+        fcs = fields[0]
+        state = fields[1]
+
+disk_lenth = len(fcs)
+
+# ent
+for line in out.splitlines():
+    if 'ent' in line:
+        fields = line.strip().split()
+        ent = fields[0]
+        state = fields[1]
+
+disk_lenth = len(ent)
+
+#lspath
+#bootinfo -b
+#lsvg total count
+#lsvg count
+#lsvg active
+#openlv
+#closelv
+
+#ifconfig
+#netstat -nr
+
+# EtherChannel
+for line in out.splitlines():
+    if 'EtherChannel' in line:
+        fields = line.strip().split()
+        eth = fields[0]
+        state = fields[1]
+
+disk_lenth = len(eth)
+
+
+# iocp
+for line in out.splitlines():
+    if 'iocp' in line:
+        fields = line.strip().split()
+        iocp = fields[0]
+        state = fields[1]
+
+disk_lenth = len(iocp)
+
+#ifconfig -a
+
+#tape
+avail_tape = []
+for line in out.splitlines():    
+    fields = line.strip().split()
+    tape = fields[0]
+    state = fields[1]
+    if state != Available:
+        avail_tape.append(tape)
+
+
+#lparstat -i 
+
+#showmount -a
