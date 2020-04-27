@@ -125,12 +125,9 @@ def main():
         ),
         supports_check_mode=True,
     )
-
-    name = module.params['name']
-    bootlist_value = module.params['bootlist']
-    if name is 'run':   
+    if module.params['name'] == 'run':
         changed, msg = bosboot(module)
-        if bootlist_value is True:
+        if module.params['bootlist'] is True:
             changed, msg = bootlist(module)
         else:
             module.fail_json(msg="Not valid input")
