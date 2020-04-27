@@ -1,49 +1,18 @@
 ---
 - hosts: all
-  remote_user: 
-  become: true
-  become_user: root
+  remote_user:
   gather_facts: yes
-  vars:
-    file_name: /path/to/log/{{ inventory_hostname }}
+  
   tasks:
-    - name: "Getting current timestamp"
-      set_fact:
-        timestamp_fact: "{{ lookup('pipe', 'date +%Y-%m-%d-%H-%M-%S') }}"
-
-    - debug: 
-        var: "{{ timestamp_fact }}"
-
-    - name: Create a directory with server name
-      file:
-        path: "{{ file_name }}_{{ timestamp_fact }}"
-        state: directory
-        mode: 744
+    - name: Run bosboot & bootlist
+      bosboot:
+         name: run
+         bootlist: true
       delegate_to: "127.0.0.1"
+      register: result
+      become: true
 
-    - name: Create a directory to save the VG information
-      file:
-        path: "{{ file_name }}_{{ timestamp_fact }}/vgdetails"
-        state: directory
-        mode: 0744
-      delegate_to: "127.0.0.1"
+    - name: debug
+      debug:
+        var: result
 
-    - name: Run bosboot
-      aix_precheck:
-         name: bosboot
-         bootlist: False
-      delegate_to: "127.0.0.1"
-      register: bosboot
-
-    - name: Create a file inside VGDetails folder to save the bosboot info
-      file:
-        path: "{{ file_name }}_{{ timestamp_fact }}/vgdetails/bosboot.txt"
-        state: touch
-        mode: 0744
-      delegate_to: "127.0.0.1"
-
-    - name: Copy the lsvg output to the newly created file
-      lineinfile:
-        dest: "{{ file_name }}_{{ timestamp_fact }}/vgdetails/bosboot.txt"
-        line: "{{ lbosboot.stdout }}"
-      delegate_to: "127.0.0.1"
