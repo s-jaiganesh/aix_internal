@@ -29,9 +29,9 @@ def main():
     if module.check_mode:
         module.exit_json(**result)
 
-    oslevel_cmd = module.get_bin_path('df', True)
+    df_cmd = module.get_bin_path('df', True)
     if module.params['name'] == 'list':
-        rc, out, err = module.run_command("%s -k" % (oslevel_cmd))
+        rc, out, err = module.run_command("%s -k" % (df_cmd))
         if rc == 0:
             out = out.rstrip(b"\r\n")
             err = err.rstrip(b"\r\n")
@@ -46,7 +46,7 @@ def main():
             module.exit_json(**result)
 
         if rc != 0:
-            module.fail_json(msg="Failing to run %s command." % oslevel_cmd)
+            module.fail_json(msg="Failing to run %s command." % df_cmd)
 
     else:
             module.exit_json(msg = "Invalid input. Error!")
