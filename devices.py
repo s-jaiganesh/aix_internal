@@ -30,9 +30,9 @@ def _list_devices(module, device):
                 hdisks.append(fields[0])
                 output.append(line)
         result = dict(
-            output=output
-            rc=rc
-            changed=True
+            output=output,
+            rc=rc,
+            changed=True,
         )
         module.exit_json(**result)
 
