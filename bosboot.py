@@ -55,8 +55,7 @@ def bosboot(module):
         rc=rc
         changed = True
         bosboot_msg = "bosboot to executed"
-    msg = bosboot_msg
-    return changed, msg
+        module.exit_json(msg="successfully executed")
     
 def bootlist(module):      
         
@@ -64,7 +63,7 @@ def bootlist(module):
     rc, hd5_pvs, err = module.run_command("%s -l '%s'" % (lslv_cmd, 'hd5'))
     if rc != 0:
         changed = False
-        module.fail_json(msg="Failing to execute '%s' command." % lslv_cmd)
+        module.fail_json(msg="67:Failing to execute '%s' command." % lslv_cmd)
 
     pvs_to_set_bootlist = []
     for line in hd5_pvs.splitlines():
@@ -79,39 +78,41 @@ def bootlist(module):
     if len(pvs_to_set_bootlist) == 2:
         
         for disk in pvs_to_set_bootlist:
-            rc, stdout, stderr = module.run_command("%s '-m normal' %s %s" % (bootlist_cmd, (hdisk[0]), (hdisk[1])))
+            rc, out, err = module.run_command("%s -m normal %s %s" % (bootlist_cmd, (hdisk[0]), (hdisk[1])))
             if rc != 0:
                 changed = False
                 err = err.rstrip(b"\r\n")
                 stderr=err
                 rc=rc
-                module.fail_json(msg="Failing to execute '%s' command." % bootlist_cmd)
+                module.fail_json(msg="88:Failing to execute '%s' command." % bootlist_cmd)
             else:
                 out = out.rstrip(b"\r\n")
                 stdout=out
                 rc=rc
                 changed = True
                 bootlist_msg = "Bootlist has been set successfully"
+                module.exit_json(msg="bootlist set successfully")
 
     elif len(pvs_to_set_bootlist) == 1:
         
-        rc, stdout, stderr = module.run_command("%s '-m normal' %s" % (bootlist_cmd, pvs_to_set_bootlist[0]))
+        rc, out, err = module.run_command("%s -m normal %s" % (bootlist_cmd, pvs_to_set_bootlist[0]))
         if rc != 0:
             changed = False
             err = err.rstrip(b"\r\n")
             stderr=err
             rc=rc
-            module.fail_json(msg="Failing to execute '%s' command." % bootlist_cmd)
+            module.fail_json(msg="104:Failing to execute '%s' command." % bootlist_cmd)
         else:
             out = out.rstrip(b"\r\n")
             stdout=out
             rc=rc
             changed = True
             bootlist_msg = "Bootlist has been set successfully"
+            module.exit_json(msg="bootlist set successfully")
     else:
         changed = False
         bootlist_msg = "No Boot image present on any PV"
-        module.fail_json(msg="Failing to execute '%s' command." % lslv_cmd)
+        module.fail_json(msg="114:Failing to execute '%s' command." % lslv_cmd)
 
     msg = bootlist_msg
     return changed, msg
@@ -126,9 +127,9 @@ def main():
         supports_check_mode=True,
     )
     if module.params['name'] == 'run':
-        changed, msg = bosboot(module)
+        bosboot(module)
         if module.params['bootlist'] is True:
-            changed, msg = bootlist(module)
+            bootlist(module)
         else:
             module.fail_json(msg="Not valid input")
     else:
