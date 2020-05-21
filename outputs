@@ -1,0 +1,45 @@
+Tape
+-----
+vd01d32p1  Available 55-T1-01 IBM 3580 Ultrium Tape Drive (FCP)
+vd01d33p1  Available 55-T1-01 IBM 3580 Ultrium Tape Drive (FCP)
+vd01d34p1  Available 55-T1-01 IBM 3580 Ultrium Tape Drive (FCP)
+vd01d35p1  Available 55-T1-01 IBM 3580 Ultrium Tape Drive (FCP)
+vd01d36p1  Available 55-T1-01 IBM 3580 Ultrium Tape Drive (FCP)
+vd01d37p1  Available 55-T1-01 IBM 3580 Ultrium Tape Drive (FCP)
+vd01d38p1  Available 55-T1-01 IBM 3580 Ultrium Tape Drive (FCP)
+vd01d39p1  Available 55-T1-01 IBM 3580 Ultrium Tape Drive (FCP)
+vd01d40p1  Available 55-T1-01 IBM 3580 Ultrium Tape Drive (FCP)
+vd01lib0p1 Available 55-T1-01 IBM 3584 Library Medium Changer (FCP)
+vd01lib0p2 Available 55-T1-01 IBM 3584 Library Medium Changer (FCP)
+
+emgr 
+-----
+ID  STATE LABEL      INSTALL TIME      UPDATED BY ABSTRACT
+=== ===== ========== ================= ========== ======================================
+1    S    IJ21577s5a 02/02/20 06:53:00            Ifix for APAR IJ21577                 
+2    S    IJ20783s5a 02/03/20 08:39:24            CVEs vulnerabilities fixed            
+
+no-efix
+--------
+There is no efix data on this system
+
+etherchannel-lsdev-C|grep 'EtherChannel'
+----------------------------------------
+ent4            Available          EtherChannel / IEEE 802.3ad Link Aggregation
+
+etherchannel-lsattr-EH-l
+-------------------------
+attribute       value          description                                 user_settable
+
+adapter_names   ent0           EtherChannel Adapters                       True
+alt_addr        0x000000000000 Alternate EtherChannel Address              True
+auto_recovery   no             Enable automatic recovery after failover    True
+backup_adapter  ent2           Adapter used when whole channel fails       True
+hash_mode       default        Determines how outgoing adapter is chosen   True
+mode            standard       EtherChannel mode of operation              True
+netaddr                        Address to ping                             True
+noloss_failover no             Enable lossless failover after ping failure True
+num_retries     3              Times to retry ping before failing          True
+retry_time      1              Wait time (in seconds) between pings        True
+use_alt_addr    no             Enable Alternate EtherChannel Address       True
+use_jumbo_frame no             Enable Gigabit Ethernet Jumbo Frames        True
