@@ -96,17 +96,22 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             label=dict(type='str', required=True),
-            state=dict(type='bool',default=False),
+            state=dict(type='str',default=False),
+            preview=dict(type='bool',default=False),
+
         ),
         supports_check_mode=True,
     )
     if module.params['label'] == 'all':        
         if module.params['state'] == 'absent':
-            _remove_all_ifix_pkg_preview(module)
+            if module.params['preview'] is True:
+                _remove_all_ifix_pkg_preview(module)
+            else:
+                module.fail_json(msg="Preview: option not available")
         else:
-            module.fail_json(msg="Not valid input")
+            module.fail_json(msg="state option can be present or absent only")
     else:
-        module.fail_json(msg="Not valid input")
+        module.fail_json(msg="not a valid option")
         
 if __name__ == '__main__':
     main()
