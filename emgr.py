@@ -28,7 +28,7 @@ options:
 '''
 
 EXAMPLES = r'''
-- name: Create a volume group datavg
+- name: emgr remove preview
   emgr:
     label: all
     state: absent    
