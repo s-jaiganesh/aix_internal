@@ -1,13 +1,13 @@
 To set bosboot & bootlist
 
 instructions:-
-  1. Download bosboot.py, devices.py & aix_precheck.yml
+  1. Download emgr.py and emgr-preview.yml
   2. mkdir library
-  3. mv bosboot.py devices.py library/
+  3. mv emgr.py library/
   4. run playbook
-      # ansible-playbook aix_precheck.yml -i hostfile -u username
+      # ansible-playbook emgr-preview.yml -i hostfile -u username
 
 to check syntax error in yaml file:-
   1. yum install yamllint
   2. run below command
-      # yamllint aix_precheck.yml
+      # yamllint emgr-preview.yml
