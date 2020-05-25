@@ -30,8 +30,9 @@ options:
 EXAMPLES = r'''
 - name: Create a volume group datavg
   emgr:
-    name: all
+    label: all
     state: absent    
+    preview: yes
 '''
 
 RETURN = r''' # '''
