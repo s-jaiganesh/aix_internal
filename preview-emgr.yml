@@ -8,7 +8,7 @@
       emgr:
         label: all
         state: absent
-        preview: yes
+        preview: True
       register: emgr
       become: true
 
