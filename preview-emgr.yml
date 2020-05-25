@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  remote_user:
+  gather_facts: yes
+
+  tasks:
+    - name: emgr preview - all lables
+      emgr:
+        label: all
+        state: absent
+        preview: yes
+      register: emgr
+      become: true
+
+    - name: debug boot
+      debug: var=emgr
