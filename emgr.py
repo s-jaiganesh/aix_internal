@@ -50,11 +50,12 @@ def _remove_all_efix_pkg_preview(module):
             changed = False
             module.exit_json(msg="There is no efix data on this system")
         else:
-            res = 'True'
+            res = True
 
     if res is True:        
         lines = lables.split('\n',2)[-1]
-        for line in lines.splitlines():                   
+        for line in lines.splitlines(): 
+             fields = line.strip().split()        
              _to_remove.append(fields[2])
              
         result = { 'lables_to_remove' : _to_remove}
@@ -92,7 +93,7 @@ def _remove_all_efix_pkg_preview(module):
                 module.exit_json(**result)            
             else:
                 module.exit_json(msg="Empty arrary")
-     else:
+    else:
             module.fail_json(msg="Unhandled error")
   
 def main():
