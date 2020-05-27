@@ -1,4 +1,4 @@
-To set bosboot & bootlist
+To preview emgr
 
 instructions:-
   1. Download emgr.py and emgr-preview.yml
