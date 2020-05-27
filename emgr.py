@@ -39,7 +39,7 @@ RETURN = r''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
 
-def _remove_all_efix_pkg_preview(module):      
+def _remove_all_efix_pkg_preview(module, preview):      
 
     result = dict()    
     _to_remove, _failed, _success, _err, _out = ([] for i in range(5))
@@ -101,15 +101,16 @@ def main():
         argument_spec=dict(
             label=dict(type='str', required=True),
             state=dict(type='str',default=False),
-            preview=dict(type='bool',default=False),
+            preview=dict(type='bool',default=True),
 
         ),
         supports_check_mode=True,
     )
+    preview = module.params['preview']
     if module.params['label'] == 'all':        
         if module.params['state'] == 'absent':
             if module.params['preview'] is True:
-                _remove_all_efix_pkg_preview(module)                
+                _remove_all_efix_pkg_preview(module, preview)                
             else:
                 module.fail_json(msg="Preview: option not available")
         else:
