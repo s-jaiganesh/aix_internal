@@ -40,6 +40,8 @@ RETURN = r''' # '''
 from ansible.module_utils.basic import AnsibleModule
 
 def _check_efix(module):
+    emgr_cmd = module.get_bin_path('emgr', True)
+    rc, lables, err = module.run_command("%s -l" % (emgr_cmd))
     for line in lables.splitlines():
         if line == "There is no efix data on this system":
             changed = False
