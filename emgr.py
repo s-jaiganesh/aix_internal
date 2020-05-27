@@ -92,7 +92,8 @@ def _remove_all_efix_pkg_preview(module):
                 module.exit_json(**result)            
             else:
                 module.exit_json(msg="Empty arrary")
-          
+     else:
+            module.fail_json(msg="Unhandled error")
   
 def main():
     module = AnsibleModule(
