@@ -1,0 +1,394 @@
+#!/usr/bin/bash
+
+ . /scripts/SOURCE
+
+# set -x # echo command to stdout
+# set -e # exit on non-zero return
+
+ CONFIRM=$1
+ COLOR=$2
+
+ [[ -z $CONFIRM ]] && CONFIRM=y
+ [[ -z $COLOR ]] && COLOR=y
+
+# MAIL_LIST=`cat /nim/ABC/MAIL_TEST`
+ MAIL_LIST=`cat /nim/ABC/MAIL_LIST`
+
+ HOSTNAME=`hostname -s | tr A-Z a-z`
+ BASE_DIR=/nim/AIX_BASE_CONFIG
+
+ PATCH=`basename $0 | cut -d. -f 3`
+ PATCH_DIR="/nim/AIX_PATCH/AIX_TL_${PATCH}"
+ PATCH_LOGS=/tmp/PATCH_LOGS
+
+ OSLEVEL=`oslevel -s`
+ VERSION=`uname -v`
+ RELEASE=`uname -r`
+ INSTALL_DIR=/nim/AIX_INSTALL/${VERSION}${RELEASE}00
+
+ COUNT=9
+
+ if [[ ! -f /${PATCH} ]]; then
+    [[ $COLOR == "y" ]] && printf "${REDB}"
+    printf "\n%-80s\n\n" " *****  Part 1 for ${PATCH} did not run  ***** \n\n"
+    [[ $COLOR == "y" ]] && printf "${NC}"
+    exit 1
+ fi
+
+ /usr/sbin/instfix -i | $GREP ML | $GREP "Not all filesets" > /dev/null
+ if [[ $? -eq 0 ]]; then
+    [[ $COLOR == "y" ]] && printf "${REDB}"
+    printf "\n%-80s\n\n" " *****  Fix instfix errors before proceeding  *****"
+    [[ $COLOR == "y" ]] && printf "${NC}"
+    [[ $COLOR == "y" ]] && printf "${YELLOW}"
+    /usr/sbin/instfix -i|grep ML
+    printf "\n"
+    [[ $COLOR == "y" ]] && printf "${NC}"
+    exit 1
+ fi
+
+ if [[ ${OSLEVEL} != ${PATCH} ]]; then
+    [[ $COLOR == "y" ]] && printf "${REDB}"
+    printf "\n%-80s\n\n" " *****  oslevel (${OSLEVEL}) is not ${PATCH}  ***** \n\n"
+    [[ $COLOR == "y" ]] && printf "${NC}"
+    exit 1
+ fi
+
+
+ echo ${HOSTNAME} | egrep -e ^a -e ^A > /dev/null
+ if [[ $? -eq 0 ]]; then
+    TEMP=`echo ${HOSTNAME} | cut -c 6-7`
+    case ${TEMP} in
+          dm) ENV=NONPROD ;;
+          dv) ENV=NONPROD ;;
+          ts) ENV=NONPROD ;;
+          qa) ENV=NONPROD ;;
+          pd) ENV=PROD ;;
+          *) ENV=PROD ;;
+    esac
+ else
+    ENV=DR
+ fi
+
+
+ [[ $COLOR == "y" ]] && printf "${GREENB}"
+ printf "\n%-80s" ""
+ printf "\n%-80s" "`date`"
+ printf "\n%-80s" "################################################################################"
+ printf "\n%-80s" "                        AIX ${VERSION}.${RELEASE} PATCH - PART 2"
+ printf "\n%-80s" "################################################################################"
+ [[ $COLOR == "y" ]] && printf "${REDB}"
+ printf "\n%-80s" "ENV is ${ENV}"
+ [[ $COLOR == "y" ]] && printf "${GREENB}"
+ printf "\n%-80s" "################################################################################"
+ printf "\n%-80s" ""
+
+ if [[ $CONFIRM != "n" ]]; then
+    [[ $COLOR == "y" ]] && printf "${REDB}"
+    printf "\n%-80s" "****  "
+    printf "\n%-80s" "****  This will complete the patch update for ${PATCH}"
+    printf "\n%-80s\n" "****  "
+    [[ $COLOR == "y" ]] && printf "${YELLOWB}"
+    read -p "Continue? (y) " VAR
+    if [[ $VAR != "y" && $VAR != "Y" ]]; then
+       [[ $COLOR == "y" ]] && printf "${NC}"
+       exit 1
+    fi
+    $LSPV | $MAIL -s "`hostname -s` PATCH PART 2 STARTED : $0" ${MAIL_LIST}
+ fi
+
+ [[ ! -d ${PATCH_LOGS} ]] && mkdir ${PATCH_LOGS}
+
+ ###################################################################################
+ TEXTOUT='REMOVE OLD FILESETS'
+ _header ${TEXTOUT}
+ COUNT=`expr $COUNT + 1`
+ OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_remove_filesets.out
+    ${BASE_DIR}/0900.remove.filesets.sh | $TEE ${OUTLOG}
+    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+ TEXTOUT='REMOVE USERS'
+ _header ${TEXTOUT}
+ COUNT=`expr $COUNT + 1`
+ OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_user_remove.out
+    ${BASE_DIR}/2001.user_remove.sh | $TEE ${OUTLOG}
+    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+ TEXTOUT='UPDATE ALL'
+ _header ${TEXTOUT}
+ COUNT=`expr $COUNT + 1`
+ OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_install_all_updates.out
+    installp -c all
+
+    if [[ -e /var/perf/pm/daily ]]; then
+       rm -r /var/perf/pm/daily/*
+    else
+       mkdir /var/perf/pm/daily
+    fi
+    installp -F -ac -d ${INSTALL_DIR} bos.perf.tools
+
+    mv /etc/info-dir /etc/info-dir.old
+    mv /usr/opt/freeware/info/dir /usr/opt/freeware/info/dir.old
+    installp -F -Yac -d ${INSTALL_DIR} rpm.rte
+
+    install_all_updates -c -Y -d ${PATCH_DIR} | $TEE ${OUTLOG}
+    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+# TEXTOUT='INSTALL EFIXES'
+# _header ${TEXTOUT}
+# # tcpdump fix
+# COUNT=`expr $COUNT + 1`
+# OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_efix_tcpdump.out
+# /nim/AIX_EFIXES/tcpdump_fix2/install_IV94726s4c.170417.sh install | $TEE ${PATCH_LOGS}/PATCH_02_03_efix_tcpdump.out
+# # bos.rte.libc fix
+# OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_efix_bos.rte.libc.out
+# /nim/AIX_EFIXES/7100_04_04/install_IV96345s4b.170525.71TL04SP04.sh install | $TEE ${PATCH_LOGS}/PATCH_02_03_efix_bos.rte.libc.out
+
+
+ ###################################################################################
+ TEXTOUT='NETBACKUP FIX'
+ _header ${TEXTOUT}
+    $LSLV tracklv > /dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
+       ln -sf /track /usr/openv/netbackup/track
+    else
+       if [[ -e /tmp/track ]]; then
+          rm -r /tmp/track
+          mkdir /tmp/track
+          chmod 777 /tmp/track
+       fi
+       ln -sf /tmp/track /usr/openv/netbackup/track
+    fi
+
+
+ ###################################################################################
+ TEXTOUT='ENABLED MTU BYPASS'
+ _header ${TEXTOUT}
+    $LSDEV -Cc if | $GREP en | $AWK '{print $1}' | $XARGS -I+ $CHDEV -l + -a mtu_bypass=on
+
+
+ ###################################################################################
+ TEXTOUT='TEST EXPECT SCRIPT'
+ _header ${TEXTOUT}
+    EXPECT=`/nim/scripts/test.exp x y`
+    if [[ $EXPECT != "###### x || y #####" ]]; then
+       /nim/scripts/test.exp x y
+       _errout 'Expect may need to be reinstalled'
+    fi
+
+
+ ###################################################################################
+ TEXTOUT='CHECK FILESYSTEM SIZES'
+ _header ${TEXTOUT}
+ COUNT=`expr $COUNT + 1`
+ OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_config.filesystems.out
+    ${BASE_DIR}/0020.os_config.filesystems.sh | $TEE ${OUTLOG}
+    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+# TEXTOUT='REMOVE GANGLIA RPMS'
+# _header ${TEXTOUT}
+# COUNT=`expr $COUNT + 1`
+# OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_remove_ganglia_rpms.out
+#    ${BASE_DIR}/1013.remove.ganglia.sh | $TEE ${OUTLOG}
+#    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+#
+
+ ###################################################################################
+# lsgroup ldap > /dev/null 2>&1
+# if [[ $? -ne 0 ]]; then
+#    TEXTOUT='MKGROUP LDAP'
+#    _header ${TEXTOUT}
+#    COUNT=`expr $COUNT + 1`
+#    OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_mkgroup_ldap.out
+#       mkgroup -'A' id='501' ldap | $TEE ${OUTLOG}
+#       [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+# fi
+
+
+ ###################################################################################
+ TEXTOUT='UPDATE GCC RPMS'
+ _header ${TEXTOUT}
+ COUNT=`expr $COUNT + 1`
+ OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_install_gcc_rpms.out
+    ${BASE_DIR}/1002.install.gcc.sh install ibm | $TEE ${OUTLOG}
+    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+ TEXTOUT='UPDATE BASE RPMS'
+ _header ${TEXTOUT}
+ COUNT=`expr $COUNT + 1`
+ OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_install_base_rpms.out
+    ${BASE_DIR}/1000.install.rpms.sh install ${BASE_DIR}/1001.install.base | $TEE ${OUTLOG}
+    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+    [[ -d /tmp/screens ]] && chmod 755 /tmp/screens
+
+
+ ###################################################################################
+# TEXTOUT='REMOVE RPMS'
+# _header ${TEXTOUT}
+# COUNT=`expr $COUNT + 1`
+# OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_remove_rpms.out
+#    rpm -e nagios-nrpe | $TEE ${OUTLOG}
+#    rpm -e nagios-plugins | $TEE -a ${OUTLOG}
+#    rpm -e curl | $TEE -a ${OUTLOG}
+#    rpm -e libssh2 | $TEE -a ${OUTLOG}
+#    rpm -e openssl | $TEE -a ${OUTLOG}
+#    rpm -q db > /dev/null 2>&1
+#    if [[ $? -eq 0 ]]; then
+#       rpm -q db4 > /dev/null 2>&1
+#       if [[ $? -eq 0 ]]; then
+#          rpm -e db4
+#          installp -F -Yac -d ${INSTALL_DIR} rpm.rte
+#       fi
+#    fi
+
+
+ ###################################################################################
+ TEXTOUT='UPDATE UTIL RPMS'
+ _header ${TEXTOUT}
+ COUNT=`expr $COUNT + 1`
+ OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_install_utils_rpms.out
+    ${BASE_DIR}/1000.install.rpms.sh install ${BASE_DIR}/1010.install.utils | $TEE ${OUTLOG}
+    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+    ln -sf /opt/freeware/bin/python /usr/bin/python
+
+
+ ###################################################################################
+# TEXTOUT='REINSTALL GANGLIA RPMS'
+# _header ${TEXTOUT}
+# COUNT=`expr $COUNT + 1`
+# OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_reinstall_ganglia_rpms.out
+#    ${BASE_DIR}/1000.install.rpms.sh install ${BASE_DIR}/1011.install.gmond-3.7.2 --override | $TEE ${OUTLOG}
+#    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+# TEXTOUT='CONFIGURE GANGLIA '
+# _header ${TEXTOUT}
+# COUNT=`expr $COUNT + 1`
+# OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_configure_ganglia.out
+#    ${BASE_DIR}/1012.install.gmond.sh ${ENV} 3.7.2 | $TEE ${OUTLOG}
+#    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+# TEXTOUT='REINSTALL PUPPET'
+# _header ${TEXTOUT}
+# COUNT=`expr $COUNT + 1`
+# OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_reinstall_puppet.out
+#    ${BASE_DIR}/1200.install.puppet.sh | $TEE ${OUTLOG}
+#    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+# TEXTOUT='REINSTALL NAGIOS RPMS'
+# _header ${TEXTOUT}
+# COUNT=`expr $COUNT + 1`
+# OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_reinstall_nagios_rpms.out
+#    ${BASE_DIR}/1210.install.nagios.sh perzl clean | $TEE ${OUTLOG}
+#    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+# TEXTOUT='UPDATE OPENSSL/SSH FILESETS'
+# _header ${TEXTOUT}
+# COUNT=`expr $COUNT + 1`
+# OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_install_ssh.out
+#    ${BASE_DIR}/0150.install.ssh.sh | $TEE ${OUTLOG}
+#    ${BASE_DIR}/0150.upgrade.ssh.sh | $TEE ${OUTLOG}
+#    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+# TEXTOUT='UPDATE JAVA FILESETS'
+# _header ${TEXTOUT}
+# COUNT=`expr $COUNT + 1`
+# OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_update_java.out
+#    ${BASE_DIR}/0170.update.java.sh  | $TEE ${OUTLOG}
+#    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+# TEXTOUT='UPDATE LSOF FILESETS'
+# _header ${TEXTOUT}
+# COUNT=`expr $COUNT + 1`
+# OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_install_lsof.out
+#    ${BASE_DIR}/0160.install.lsof.sh | $TEE ${OUTLOG}
+#    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+# TEXTOUT='UPDATE LPAR2RRD AGENT'
+# _header ${TEXTOUT}
+# COUNT=`expr $COUNT + 1`
+# OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_install_lpar2rrd_agent.out
+#    if [[ ! -d /home/lpar2rrd ]]; then
+#       mkdir /home/lpar2rrd
+#    fi
+#    chown lpar2rrd:staff /home/lpar2rrd
+#    /nim/ABC/1270.install.lpar2rrd_agent.sh | $TEE ${OUTLOG}
+#    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+ TEXTOUT='RESET AUDIT'
+ _header ${TEXTOUT}
+ COUNT=`expr $COUNT + 1`
+ OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_reset_audit.out
+    /nim/ABC/0041.os_config.audit_fs.sh | $TEE ${OUTLOG}
+    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+ TEXTOUT='UPDATE LUN ATTRIBUTES'
+ _header ${TEXTOUT}
+ COUNT=`expr $COUNT + 1`
+ OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_lun_attributes.out
+    /nim/ABC/fcs_disk_attr.sh set | $TEE ${OUTLOG}
+    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+ if [[ -e /etc/rc.d/rc2.d/_S99dbora ]]; then
+    TEXTOUT='RENAME DB START SCRIPT'
+    _header ${TEXTOUT}
+    COUNT=`expr $COUNT + 1`
+    OUTLOG=${PATCH_LOGS}/PATCH_01_${COUNT}_rename_db_start.out
+       mv /etc/rc.d/rc2.d/_S99dbora /etc/rc.d/rc2.d/S99dbora | $TEE ${OUTLOG}
+       [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+ fi
+
+
+ ###################################################################################
+ TEXTOUT='BOOT VERIFY'
+ _header ${TEXTOUT}
+ COUNT=`expr $COUNT + 1`
+ OUTLOG=${PATCH_LOGS}/PATCH_02_${COUNT}_boot_verify.out
+    /scripts/boot_verify.sh | $TEE ${OUTLOG}
+    [[ ${PIPESTATUS[0]} -ne 0 ]] && _errout ${TEXTOUT} COLOR=${COLOR} || _success ${TEXTOUT} COLOR=${COLOR}
+
+
+ ###################################################################################
+ if [[ $CONFIRM != "n" ]]; then
+    cat ${OUTLOG} | $MAIL -s "`hostname -s` PATCH PART 2 COMPLETE : $0" ${MAIL_LIST}
+ fi
+
+ [[ $COLOR == "y" ]] && printf "${GREENB}"
+ date
+ printf "%-55s" "*****************************************************"
+ printf "\n%-55s" "  PATCH COMPLETE.  PLEASE REBOOT"
+ printf "\n%-55s\n" "*****************************************************"
+ [[ $COLOR == "y" ]] && printf "${REDB}"
+ printf "\n%-55s\n" "REBOOT:> echo \"shutdown -Fr now\" | at now"
+ [[ $COLOR == "y" ]] && printf "${NC}"
+ printf "\n"
+
