@@ -45,7 +45,7 @@ def _check_efix(module):
             changed = False
             module.exit_json(msg="There is no efix data on this system")
         else:
-            _remove_all_efix_pkg_preview
+            _remove_all_efix_pkg_preview(module)
 
 def _remove_all_efix_pkg_preview(module):      
     result = dict()    
