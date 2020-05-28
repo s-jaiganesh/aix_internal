@@ -13,18 +13,12 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = r'''
 ---
 author:
-- Mr. Jai
+- Jai Ganesh
 module: emgr
-short_description: Collect precheck before patching
+short_description: Remove EFIX
 description:
-- This module creates boot image on disks
+- This module removes EFIX with preview option
 version_added: '1.0'
-options:
-  name:
-    description:
-    - name of action example
-    type: str
-    default: yes
 '''
 
 EXAMPLES = r'''
@@ -32,7 +26,13 @@ EXAMPLES = r'''
   emgr:
     label: all
     state: absent    
-    preview: yes
+    preview: True
+    
+- name: emgr remove
+  emgr:
+    label: all
+    state: absent    
+    preview: False  
 '''
 
 RETURN = r''' # '''
