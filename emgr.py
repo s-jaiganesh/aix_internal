@@ -101,18 +101,15 @@ def main():
         argument_spec=dict(
             label=dict(type='str', required=True),
             state=dict(type='str',default=False),
-            preview=dict(type='bool',default=True),
+            preview=dict(type='bool',default=False),
 
         ),
         supports_check_mode=True,
     )
-    preview = module.params['preview']
+    preview = module.params['preview'] 
     if module.params['label'] == 'all':        
-        if module.params['state'] == 'absent':
-            if module.params['preview'] is True:
-                _remove_all_efix_pkg_preview(module, preview)                
-            else:
-                module.fail_json(msg="Preview: option not available")
+        if module.params['state'] == 'absent':            
+            _remove_all_efix_pkg_preview(module, preview)                            
         else:
             module.fail_json(msg="state option can be present or absent only")
     else:
