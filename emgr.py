@@ -61,9 +61,17 @@ def _remove_all_efix_pkg_preview(module, preview):
             module.fail_json(msg="Preview option not avaiable. valid must be True or False")
             
         lines = lables.split('\n',2)[-1]
-        for line in lines.splitlines():                   
-             fields = line.strip().split()
-             _to_remove.append(fields[2])
+        reach=0
+
+        for line in lines.splitlines():
+            if reach is 0:
+                fields = line.strip().split()
+                if len(fields) > 2:
+                    _to_remove.append(fields[2])
+                elif len(fields) < 2:
+                    reach = 1
+                else:
+                    module.fail_json(msg="unexpected return from %s command" emgr_cmd)
              
         _to_remove_count = len(_to_remove)
         if len(_to_remove) > 0:        
