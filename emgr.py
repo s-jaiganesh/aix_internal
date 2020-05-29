@@ -41,7 +41,8 @@ from ansible.module_utils.basic import AnsibleModule
 
 def _remove_all_efix_pkg_preview(module, preview):      
 
-    result = dict()    
+    result = dict()
+    res = ''
     _to_remove, _failed, _success, _err, _out = ([] for i in range(5))
     emgr_cmd = module.get_bin_path('emgr', True)
     rc, lables, err = module.run_command("%s -l" % (emgr_cmd))
