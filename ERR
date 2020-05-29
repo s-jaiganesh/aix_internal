@@ -1,73 +1,39 @@
- ansible-playbook -i inventory preview-emgr.yml -vvvv
-ansible-playbook 2.8.5
-  config file = <PATH>/ansible.cfg
-  configured module search path = [u'<PATH>/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
-  ansible python module location = /usr/lib/python2.7/site-packages/ansible
-  executable location = /usr/bin/ansible-playbook
-  python version = 2.7.5 (default, Sep 26 2019, 13:23:47) [GCC 4.8.5 20150623 (Red Hat 4.8.5-39)]
-Using <PATH>/ansible.cfg as config file
-setting up inventory plugins
-host_list declined parsing <PATH>/inventory as it did not pass it's verify_file() method
-script declined parsing <PATH>/inventory as it did not pass it's verify_file() method
-auto declined parsing <PATH>/inventory as it did not pass it's verify_file() method
-Parsed <PATH>/inventory inventory source with ini plugin
-Loading callback plugin default of type stdout, v2.0 from /usr/lib/python2.7/site-packages/ansible/plugins/callback/default.pyc
+ [WARNING]: Platform aix on host miaibk04.mia.michelin.com is using the discovered Python interpreter at /usr/bin/python, but future installation of another Python
+interpreter could change this. See https://docs.ansible.com/ansible/2.8/reference_appendices/interpreter_discovery.html for more information.
 
-PLAYBOOK: preview-emgr.yml ********************************************************************************************************************************************
-Positional arguments: preview-emgr.yml
-become_method: sudo
-inventory: (u'<PATH>/inventory',)
-forks: 3
-tags: (u'all',)
-verbosity: 4
-connection: smart
-timeout: 10
-1 plays in preview-emgr.yml
-
-PLAY [all] ************************************************************************************************************************************************************
-META: ran handlers
-
-TASK [emgr preview - all lables] **************************************************************************************************************************************
-task path: <PATH>/preview-emgr.yml:7
-<<SERV>> ESTABLISH SSH CONNECTION FOR USER: <ID>
-<<SERV>> SSH: EXEC ssh -vvv -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="<ID>"' -o ConnectTimeout=10 -o ControlPath=<PATH>/.ansible/cp/e34569a169 <SERV> '/bin/sh -c '"'"'echo ~<ID> && sleep 0'"'"''
-<<SERV>> (0, '<path>/<ID>\n', 'OpenSSH_7.4p1, OpenSSL 1.0.2k-fips  26 Jan 2017\r\ndebug1: Reading configuration data <SSHPATH>\r\ndebug1: <SSHPATH> line 58: Applying options for *\r\ndebug1: auto-mux: Trying existing master\r\ndebug2: fd 3 setting O_NONBLOCK\r\ndebug2: mux_client_hello_exchange: master version 4\r\ndebug3: mux_client_forwards: request forwardings: 0 local, 0 remote\r\ndebug3: mux_client_request_session: entering\r\ndebug3: mux_client_request_alive: entering\r\ndebug3: mux_client_request_alive: done pid = 22738\r\ndebug3: mux_client_request_session: session request sent\r\ndebug1: mux_client_request_session: master session id: 2\r\ndebug3: mux_client_read_packet: read header failed: Broken pipe\r\ndebug2: Received exit status from master 0\r\n')
-<<SERV>> ESTABLISH SSH CONNECTION FOR USER: <ID>
-<<SERV>> SSH: EXEC ssh -vvv -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="<ID>"' -o ConnectTimeout=10 -o ControlPath=<PATH>/.ansible/cp/e34569a169 <SERV> '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo <path>/<ID>/.ansible/tmp/ansible-tmp-1590568460.97-176791958946712 `" && echo ansible-tmp-1590568460.97-176791958946712="` echo <path>/<ID>/.ansible/tmp/ansible-tmp-1590568460.97-176791958946712 `" ) && sleep 0'"'"''
-<<SERV>> (0, 'ansible-tmp-1590568460.97-176791958946712=<path>/<ID>/.ansible/tmp/ansible-tmp-1590568460.97-176791958946712\n', 'OpenSSH_7.4p1, OpenSSL 1.0.2k-fips  26 Jan 2017\r\ndebug1: Reading configuration data <SSHPATH>\r\ndebug1: <SSHPATH> line 58: Applying options for *\r\ndebug1: auto-mux: Trying existing master\r\ndebug2: fd 3 setting O_NONBLOCK\r\ndebug2: mux_client_hello_exchange: master version 4\r\ndebug3: mux_client_forwards: request forwardings: 0 local, 0 remote\r\ndebug3: mux_client_request_session: entering\r\ndebug3: mux_client_request_alive: entering\r\ndebug3: mux_client_request_alive: done pid = 22738\r\ndebug3: mux_client_request_session: session request sent\r\ndebug1: mux_client_request_session: master session id: 2\r\ndebug3: mux_client_read_packet: read header failed: Broken pipe\r\ndebug2: Received exit status from master 0\r\n')
-Using module file <PATH>/library/emgr.py
-<<SERV>> PUT <PATH>/.ansible/tmp/ansible-local-22759Av5dCY/tmpeI5jHK TO <path>/<ID>/.ansible/tmp/ansible-tmp-1590568460.97-176791958946712/AnsiballZ_emgr.py
-<<SERV>> SSH: EXEC sftp -b - -vvv -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="<ID>"' -o ConnectTimeout=10 -o ControlPath=<PATH>/.ansible/cp/e34569a169 '[<SERV>]'
-<<SERV>> (0, 'sftp> put <PATH>/.ansible/tmp/ansible-local-22759Av5dCY/tmpeI5jHK <path>/<ID>/.ansible/tmp/ansible-tmp-1590568460.97-176791958946712/AnsiballZ_emgr.py\n', 'OpenSSH_7.4p1, OpenSSL 1.0.2k-fips  26 Jan 2017\r\ndebug1: Reading configuration data <SSHPATH>\r\ndebug1: <SSHPATH> line 58: Applying options for *\r\ndebug1: auto-mux: Trying existing master\r\ndebug2: fd 3 setting O_NONBLOCK\r\ndebug2: mux_client_hello_exchange: master version 4\r\ndebug3: mux_client_forwards: request forwardings: 0 local, 0 remote\r\ndebug3: mux_client_request_session: entering\r\ndebug3: mux_client_request_alive: entering\r\ndebug3: mux_client_request_alive: done pid = 22738\r\ndebug3: mux_client_request_session: session request sent\r\ndebug1: mux_client_request_session: master session id: 2\r\ndebug2: Remote version: 3\r\ndebug2: Server supports extension "posix-rename@openssh.com" revision 1\r\ndebug2: Server supports extension "statvfs@openssh.com" revision 2\r\ndebug2: Server supports extension "fstatvfs@openssh.com" revision 2\r\ndebug2: Server supports extension "hardlink@openssh.com" revision 1\r\ndebug2: Server supports extension "fsync@openssh.com" revision 1\r\ndebug3: Sent message fd 5 T:16 I:1\r\ndebug3: SSH_FXP_REALPATH . -> <path>/<ID> size 0\r\ndebug3: Looking up <PATH>/.ansible/tmp/ansible-local-22759Av5dCY/tmpeI5jHK\r\ndebug3: Sent message fd 5 T:17 I:2\r\ndebug3: Received stat reply T:101 I:2\r\ndebug1: Couldn\'t stat remote file: No such file or directory\r\ndebug3: Sent message SSH2_FXP_OPEN I:3 P:<path>/<ID>/.ansible/tmp/ansible-tmp-1590568460.97-176791958946712/AnsiballZ_emgr.py\r\ndebug3: Sent message SSH2_FXP_WRITE I:4 O:0 S:32768\r\ndebug3: SSH2_FXP_STATUS 0\r\ndebug3: In write loop, ack for 4 32768 bytes at 0\r\ndebug3: Sent message SSH2_FXP_WRITE I:5 O:32768 S:32768\r\ndebug3: Sent message SSH2_FXP_WRITE I:6 O:65536 S:32768\r\ndebug3: Sent message SSH2_FXP_WRITE I:7 O:98304 S:3446\r\ndebug3: SSH2_FXP_STATUS 0\r\ndebug3: In write loop, ack for 5 32768 bytes at 32768\r\ndebug3: SSH2_FXP_STATUS 0\r\ndebug3: In write loop, ack for 6 32768 bytes at 65536\r\ndebug3: SSH2_FXP_STATUS 0\r\ndebug3: In write loop, ack for 7 3446 bytes at 98304\r\ndebug3: Sent message SSH2_FXP_CLOSE I:4\r\ndebug3: SSH2_FXP_STATUS 0\r\ndebug3: mux_client_read_packet: read header failed: Broken pipe\r\ndebug2: Received exit status from master 0\r\n')
-<<SERV>> ESTABLISH SSH CONNECTION FOR USER: <ID>
-<<SERV>> SSH: EXEC ssh -vvv -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="<ID>"' -o ConnectTimeout=10 -o ControlPath=<PATH>/.ansible/cp/e34569a169 <SERV> '/bin/sh -c '"'"'chmod u+x <path>/<ID>/.ansible/tmp/ansible-tmp-1590568460.97-176791958946712/ <path>/<ID>/.ansible/tmp/ansible-tmp-1590568460.97-176791958946712/AnsiballZ_emgr.py && sleep 0'"'"''
-<<SERV>> (0, '', 'OpenSSH_7.4p1, OpenSSL 1.0.2k-fips  26 Jan 2017\r\ndebug1: Reading configuration data <SSHPATH>\r\ndebug1: <SSHPATH> line 58: Applying options for *\r\ndebug1: auto-mux: Trying existing master\r\ndebug2: fd 3 setting O_NONBLOCK\r\ndebug2: mux_client_hello_exchange: master version 4\r\ndebug3: mux_client_forwards: request forwardings: 0 local, 0 remote\r\ndebug3: mux_client_request_session: entering\r\ndebug3: mux_client_request_alive: entering\r\ndebug3: mux_client_request_alive: done pid = 22738\r\ndebug3: mux_client_request_session: session request sent\r\ndebug1: mux_client_request_session: master session id: 2\r\ndebug3: mux_client_read_packet: read header failed: Broken pipe\r\ndebug2: Received exit status from master 0\r\n')
-<<SERV>> ESTABLISH SSH CONNECTION FOR USER: <ID>
-<<SERV>> SSH: EXEC ssh -vvv -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="<ID>"' -o ConnectTimeout=10 -o ControlPath=<PATH>/.ansible/cp/e34569a169 -tt <SERV> '/bin/sh -c '"'"'sudo -H -S -n  -u root /bin/sh -c '"'"'"'"'"'"'"'"'echo BECOME-SUCCESS-yfbdduorjtpiflhdhozgaixdrdbgoyrk ; /usr/bin/python <path>/<ID>/.ansible/tmp/ansible-tmp-1590568460.97-176791958946712/AnsiballZ_emgr.py'"'"'"'"'"'"'"'"' && sleep 0'"'"''
-Escalation succeeded
-<<SERV>> (1, '{"msg": "New-style module did not handle its own exit", "failed": true}\r\n', 'OpenSSH_7.4p1, OpenSSL 1.0.2k-fips  26 Jan 2017\r\ndebug1: Reading configuration data <SSHPATH>\r\ndebug1: <SSHPATH> line 58: Applying options for *\r\ndebug1: auto-mux: Trying existing master\r\ndebug2: fd 3 setting O_NONBLOCK\r\ndebug2: mux_client_hello_exchange: master version 4\r\ndebug3: mux_client_forwards: request forwardings: 0 local, 0 remote\r\ndebug3: mux_client_request_session: entering\r\ndebug3: mux_client_request_alive: entering\r\ndebug3: mux_client_request_alive: done pid = 22738\r\ndebug3: mux_client_request_session: session request sent\r\ndebug1: mux_client_request_session: master session id: 2\r\ndebug3: mux_client_read_packet: read header failed: Broken pipe\r\ndebug2: Received exit status from master 1\r\nShared connection to <SERV> closed.\r\n')
-<<SERV>> Failed to connect to the host via ssh: OpenSSH_7.4p1, OpenSSL 1.0.2k-fips  26 Jan 2017
-debug1: Reading configuration data <SSHPATH>
-debug1: <SSHPATH> line 58: Applying options for *
-debug1: auto-mux: Trying existing master
-debug2: fd 3 setting O_NONBLOCK
-debug2: mux_client_hello_exchange: master version 4
-debug3: mux_client_forwards: request forwardings: 0 local, 0 remote
-debug3: mux_client_request_session: entering
-debug3: mux_client_request_alive: entering
-debug3: mux_client_request_alive: done pid = 22738
-debug3: mux_client_request_session: session request sent
-debug1: mux_client_request_session: master session id: 2
-debug3: mux_client_read_packet: read header failed: Broken pipe
-debug2: Received exit status from master 1
-Shared connection to <SERV> closed.
-<<SERV>> ESTABLISH SSH CONNECTION FOR USER: <ID>
-<<SERV>> SSH: EXEC ssh -vvv -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="<ID>"' -o ConnectTimeout=10 -o ControlPath=<PATH>/.ansible/cp/e34569a169 <SERV> '/bin/sh -c '"'"'rm -f -r <path>/<ID>/.ansible/tmp/ansible-tmp-1590568460.97-176791958946712/ > /dev/null 2>&1 && sleep 0'"'"''
-<<SERV>> (0, '', 'OpenSSH_7.4p1, OpenSSL 1.0.2k-fips  26 Jan 2017\r\ndebug1: Reading configuration data <SSHPATH>\r\ndebug1: <SSHPATH> line 58: Applying options for *\r\ndebug1: auto-mux: Trying existing master\r\ndebug2: fd 3 setting O_NONBLOCK\r\ndebug2: mux_client_hello_exchange: master version 4\r\ndebug3: mux_client_forwards: request forwardings: 0 local, 0 remote\r\ndebug3: mux_client_request_session: entering\r\ndebug3: mux_client_request_alive: entering\r\ndebug3: mux_client_request_alive: done pid = 22738\r\ndebug3: mux_client_request_session: session request sent\r\ndebug1: mux_client_request_session: master session id: 2\r\ndebug3: mux_client_read_packet: read header failed: Broken pipe\r\ndebug2: Received exit status from master 0\r\n')
-fatal: [<SERV>]: FAILED! => {
+fatal: [miaibk04.mia.michelin.com]: FAILED! => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    }, 
     "changed": false, 
-    "msg": "New-style module did not handle its own exit"
+    "invocation": {
+        "module_args": {
+            "label": "all", 
+            "preview": true, 
+            "state": "absent"
+        }
+    }, 
+    "lables_failed": [
+        "==========", 
+        "IJ21577s5a", 
+        "IJ20783s5a"
+    ], 
+    "lables_success": [], 
+    "lables_to_remove": [
+        "==========", 
+        "IJ21577s5a", 
+        "IJ20783s5a"
+    ], 
+    "msg": "PREVIEW none of the EFIX are affected", 
+    "stderr": [
+        "Usage emgr: List interim fix data \n      emgr -l [-L <label> | -n <ifix number> | -u <VUID>] [-v{1-3}X] \n           [-a <path>]\n\nUsage emgr: Install interim fix package \n      emgr -e <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-bkpIqmoX]\n\nUsage emgr: Install concurrent update interim fix package \n      emgr -i <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-CkpIqX]\n\nUsage emgr: Install concurrent update interim fix package and commit \n      emgr -C -i <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-kpIqX]\n\nUsage emgr: Commit concurrent update interim fix to disk \n      emgr -C -L <label> [-kpIqX]\n\nUsage emgr: Remove installed interim fix\n      emgr -r -L <label> | -n <ifix num> | -u <VUID> | -f <lfile>\n           [-w <dir>] [-a <path>] [-bkpIqX] \n \nUsage emgr: Check installed interim fix\n      emgr -c [-L <label> | -n <ifix num> | -u <VUID> | -f <lfile>]\n           [-w <dir>] [-a <path>] [-v{1-3}X]\n\nUsage emgr: Mount or unmount installed interim fix\n      emgr -M | -U [-L <label> | -n <ifix num> | -u <VUID> | -f <lfile>]\n           [-w <dir>] [-a <path>] [-X]\n\nUsage emgr: Force Remove installed interim fix\n      emgr -R <ifix label> [-w <dir>] [-a <path>] [-X]\n\nUsage emgr: Package View\n      emgr -P [<Package>] [-a <path>] [-X]\n\nUsage emgr: Display interim fix package \n      emgr -d -e <ifix pkg> | -f <lfile> [-w <path>] [-v{1-3}X]\n\nFlags:\n\n -a = Alternate install directory path  -q = Quiet mode\n -b = Skip bosboot                      -r = Remove operation\n -c = Check operation                   -u = Select by VUID\n -d = Display ifix package              -v = Verbose level 1-3\n -e = Path to ifix package file         -w = Alternate work directory\n -f = List file                         -C = Commit CU ifix to disk\n -i = Path to CU ifix package file      -I = Invoke debugger for bosboot\n -k = Load debugger for bosboot         -L = Select Label\n -l = List operation                    -M = Mount operation\n -m = Mount install                     -P = Package View operation\n -n = Select by ifix number             -R = Force Remove (Unregister) operation\n -o = Overwrite                         -U = Unmount operation\n -p = Preview only                      -X = Automatic file system expansion", 
+        "Usage emgr: List interim fix data \n      emgr -l [-L <label> | -n <ifix number> | -u <VUID>] [-v{1-3}X] \n           [-a <path>]\n\nUsage emgr: Install interim fix package \n      emgr -e <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-bkpIqmoX]\n\nUsage emgr: Install concurrent update interim fix package \n      emgr -i <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-CkpIqX]\n\nUsage emgr: Install concurrent update interim fix package and commit \n      emgr -C -i <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-kpIqX]\n\nUsage emgr: Commit concurrent update interim fix to disk \n      emgr -C -L <label> [-kpIqX]\n\nUsage emgr: Remove installed interim fix\n      emgr -r -L <label> | -n <ifix num> | -u <VUID> | -f <lfile>\n           [-w <dir>] [-a <path>] [-bkpIqX] \n \nUsage emgr: Check installed interim fix\n      emgr -c [-L <label> | -n <ifix num> | -u <VUID> | -f <lfile>]\n           [-w <dir>] [-a <path>] [-v{1-3}X]\n\nUsage emgr: Mount or unmount installed interim fix\n      emgr -M | -U [-L <label> | -n <ifix num> | -u <VUID> | -f <lfile>]\n           [-w <dir>] [-a <path>] [-X]\n\nUsage emgr: Force Remove installed interim fix\n      emgr -R <ifix label> [-w <dir>] [-a <path>] [-X]\n\nUsage emgr: Package View\n      emgr -P [<Package>] [-a <path>] [-X]\n\nUsage emgr: Display interim fix package \n      emgr -d -e <ifix pkg> | -f <lfile> [-w <path>] [-v{1-3}X]\n\nFlags:\n\n -a = Alternate install directory path  -q = Quiet mode\n -b = Skip bosboot                      -r = Remove operation\n -c = Check operation                   -u = Select by VUID\n -d = Display ifix package              -v = Verbose level 1-3\n -e = Path to ifix package file         -w = Alternate work directory\n -f = List file                         -C = Commit CU ifix to disk\n -i = Path to CU ifix package file      -I = Invoke debugger for bosboot\n -k = Load debugger for bosboot         -L = Select Label\n -l = List operation                    -M = Mount operation\n -m = Mount install                     -P = Package View operation\n -n = Select by ifix number             -R = Force Remove (Unregister) operation\n -o = Overwrite                         -U = Unmount operation\n -p = Preview only                      -X = Automatic file system expansion", 
+        "Usage emgr: List interim fix data \n      emgr -l [-L <label> | -n <ifix number> | -u <VUID>] [-v{1-3}X] \n           [-a <path>]\n\nUsage emgr: Install interim fix package \n      emgr -e <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-bkpIqmoX]\n\nUsage emgr: Install concurrent update interim fix package \n      emgr -i <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-CkpIqX]\n\nUsage emgr: Install concurrent update interim fix package and commit \n      emgr -C -i <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-kpIqX]\n\nUsage emgr: Commit concurrent update interim fix to disk \n      emgr -C -L <label> [-kpIqX]\n\nUsage emgr: Remove installed interim fix\n      emgr -r -L <label> | -n <ifix num> | -u <VUID> | -f <lfile>\n           [-w <dir>] [-a <path>] [-bkpIqX] \n \nUsage emgr: Check installed interim fix\n      emgr -c [-L <label> | -n <ifix num> | -u <VUID> | -f <lfile>]\n           [-w <dir>] [-a <path>] [-v{1-3}X]\n\nUsage emgr: Mount or unmount installed interim fix\n      emgr -M | -U [-L <label> | -n <ifix num> | -u <VUID> | -f <lfile>]\n           [-w <dir>] [-a <path>] [-X]\n\nUsage emgr: Force Remove installed interim fix\n      emgr -R <ifix label> [-w <dir>] [-a <path>] [-X]\n\nUsage emgr: Package View\n      emgr -P [<Package>] [-a <path>] [-X]\n\nUsage emgr: Display interim fix package \n      emgr -d -e <ifix pkg> | -f <lfile> [-w <path>] [-v{1-3}X]\n\nFlags:\n\n -a = Alternate install directory path  -q = Quiet mode\n -b = Skip bosboot                      -r = Remove operation\n -c = Check operation                   -u = Select by VUID\n -d = Display ifix package              -v = Verbose level 1-3\n -e = Path to ifix package file         -w = Alternate work directory\n -f = List file                         -C = Commit CU ifix to disk\n -i = Path to CU ifix package file      -I = Invoke debugger for bosboot\n -k = Load debugger for bosboot         -L = Select Label\n -l = List operation                    -M = Mount operation\n -m = Mount install                     -P = Package View operation\n -n = Select by ifix number             -R = Force Remove (Unregister) operation\n -o = Overwrite                         -U = Unmount operation\n -p = Preview only                      -X = Automatic file system expansion"
+    ], 
+    "stderr_lines": [], 
+    "stdout": [], 
+    "stdout_lines": []
 }
 
 PLAY RECAP ************************************************************************************************************************************************************
-<SERV> : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+miaibk04.mia.michelin.com  : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
