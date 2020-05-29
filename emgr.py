@@ -48,7 +48,7 @@ def _remove_all_efix_pkg_preview(module, preview):
     rc, lables, err = module.run_command("%s -l" % (emgr_cmd))
     out = lables.rstrip(b"\r\n")
     for i in lables.splitlines():
-        if i == "There is no efix data on this system":
+        if i == "There is no efix data on this system.":
             res = False
             result = { 'stdout' : _out, 'stdout_lines' : _out, 'rc' : 0, 'stderr': '', 'changed' : False, 'msg' : 'There is no efix data on this system' }            
             module.exit_json(**result)
