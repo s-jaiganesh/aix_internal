@@ -45,10 +45,12 @@ def _remove_all_efix_pkg_preview(module, preview):
     _to_remove, _failed, _success, _err, _out = ([] for i in range(5))
     emgr_cmd = module.get_bin_path('emgr', True)
     rc, lables, err = module.run_command("%s -l" % (emgr_cmd))
+    out = lables.rstrip(b"\r\n")
     for i in lables.splitlines():
         if i == "There is no efix data on this system":
-            changed = False
-            module.exit_json(msg="There is no efix data on this system")
+            res = False
+            result = { 'stdout' : _out, 'stdout_lines' : _out, 'rc' : 0, 'stderr': '', 'changed' : False, 'msg' : 'There is no efix data on this system' }            
+            module.exit_json(**result)
         else:
             res = True
 
@@ -71,7 +73,7 @@ def _remove_all_efix_pkg_preview(module, preview):
                 elif len(fields) < 2:
                     reach = 1
                 else:
-                    module.fail_json(msg="unexpected return from %s command" emgr_cmd)
+                    module.fail_json(msg="unexpected return from %s command" % emgr_cmd)
              
         _to_remove_count = len(_to_remove)
         if len(_to_remove) > 0:        
