@@ -55,9 +55,9 @@ def _remove_all_efix_pkg_preview(module, preview):
 
     if res is True:
         if preview is True:            
-            emgr_remove_cmd = ("%s -p -r" % (emgr_cmd))
+            emgr_remove_cmd = ("%s -p -r -L" % (emgr_cmd))
         elif preview is False:            
-            emgr_remove_cmd = ("%s -r" % (emgr_cmd))
+            emgr_remove_cmd = ("%s -r -L" % (emgr_cmd))
         else:
             module.fail_json(msg="Preview option not avaiable. valid must be True or False")
             
