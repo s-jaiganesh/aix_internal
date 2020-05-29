@@ -11,6 +11,16 @@
         preview: True
       register: emgr
       become: true
-
+      
+    - name: Install xorgs ifix IJ11544s0a.181127.epkg.Z
+      emgr:
+        package: /mnt/IJ11544s0a.181127.epkg.Z
+        state: present
+        
+    - name: Remove ifix with label IJ11544s0a
+      emgr:
+        label: IJ11544s0a
+        state: absent         
+        
     - name: debug boot
       debug: var=emgr
