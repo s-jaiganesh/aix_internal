@@ -119,7 +119,7 @@ def _remove_all_efix_pkg_preview(module, preview):
         else:
             module.fail_json(msg="Preview option not avaiable. valid must be True or False")
             
-        lines = lables.split('\n',2)[-1]
+        lines = lables.split('\n',3)[-1]
         reach=0
 
         for line in lines.splitlines():
