@@ -177,59 +177,59 @@ def main():
     )
     
     label = module.params['label']
-	package = module.params['package']
-	state = module.params['state']
+    package = module.params['package']
+    state = module.params['state']
     preview = module.params['preview']
     
     if state == 'present':
 
-		if package is None:
-			module.fail_json(msg="package path/filename is required to install ifix")
+        if package is None:
+            module.fail_json(msg="package path/filename is required to install ifix")
 		
-		label = _get_ifix_label(package)
+        label = _get_ifix_label(package)
 
-		if label is None:
-			module.fail_json(msg = ("Invalid package file or unable to get ifix label from %s" % package))
+        if label is None:
+            module.fail_json(msg = ("Invalid package file or unable to get ifix label from %s" % package))
 	
-		if _ifix_installed(label):
-			changed = False
-			msg = ("Ifix already installed: %s" % label)
-		else:
-			if not module.check_mode and _install_ifix_pkg(package):
-				changed = True
-				msg = ("IFIX package with label {0} has been installed".format(label))
-			elif module.check_mode:
-				changed = True
-				msg = ("IFIX package with label {0} would be installed".format(label))
-			else:
-				module.fail_json(msg = ("Failed to install ifix from %s" % package))
+        if _ifix_installed(label):
+            changed = False
+            msg = ("Ifix already installed: %s" % label)
+        else:
+            if not module.check_mode and _install_ifix_pkg(package):
+                changed = True
+                msg = ("IFIX package with label {0} has been installed".format(label))
+            elif module.check_mode:
+                changed = True
+                msg = ("IFIX package with label {0} would be installed".format(label))
+            else:
+                module.fail_json(msg = ("Failed to install ifix from %s" % package))
 
-	elif state == 'absent':
+    elif state == 'absent':
 		
 
-		if label is None:
-			module.fail_json(msg = "Ifix label is required to uninstall ifix")
+        if label is None:
+            module.fail_json(msg = "Ifix label is required to uninstall ifix")
 		
         if 	label == "all":
             _remove_all_efix_pkg_preview(module, preview)        
-		elif _ifix_installed(label):
-			if not module.check_mode and _remove_ifix_pkg(label):
-				changed = True
-				msg = ("IFIX package with label {0} has been removed".format(label))
-			elif module.check_mode:
-				changed = True
-				msg = ("IFIX package with label {0} would be removed".format(label))
-			else:
-				module.fail_json(msg = ("Failed to uninstall ifix %s" % label))
-		else:
-			changed = False
-			msg = ("Ifix is not installed: %s" % label)
-	else:
-		changed = False
-        	msg = "Unexpected state."
-        	module.fail_json(msg=msg)
+        elif _ifix_installed(label):
+            if not module.check_mode and _remove_ifix_pkg(label):
+                changed = True
+                msg = ("IFIX package with label {0} has been removed".format(label))
+            elif module.check_mode:
+                changed = True
+                msg = ("IFIX package with label {0} would be removed".format(label))
+            else:
+                module.fail_json(msg = ("Failed to uninstall ifix %s" % label))
+        else:
+            changed = False
+            msg = ("Ifix is not installed: %s" % label)
+    else:
+        changed = False
+            msg = "Unexpected state."
+            module.fail_json(msg=msg)
 
-    	module.exit_json(changed=changed, msg=msg)        
+        module.exit_json(changed=changed, msg=msg)        
         
 if __name__ == '__main__':
     main()
