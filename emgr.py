@@ -50,52 +50,52 @@ RETURN = r''' # '''
 from ansible.module_utils.basic import AnsibleModule
 
 def _get_ifix_label(package):
-	# gets ifix label from the ifix package file (.Z)
-	command = ["emgr"]
-	command.extend(["-d",  "-e", package])
-	result = subprocess.Popen(command, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
-	output = result.communicate()[0]
-	labels = re.findall("LABEL:\s+(\w+)",output)
-	returncode = result.returncode
-	if returncode is 0 and len(labels) > 0:
-		return labels[0]
-	else:
-		return None
+    # gets ifix label from the ifix package file (.Z)
+    command = ["emgr"]
+    command.extend(["-d",  "-e", package])
+    result = subprocess.Popen(command, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    output = result.communicate()[0]
+    labels = re.findall("LABEL:\s+(\w+)",output)
+    returncode = result.returncode
+    if returncode is 0 and len(labels) > 0:
+        return labels[0]
+    else:
+        return None
 
 def _ifix_installed(label):
-	# checks if an ifix with given label is installed on the system
-	command = ["emgr"]
-	command.extend(["-c", "-L", label])
-	result = subprocess.Popen(command)
-	output = result.communicate()[0]
-	returncode = result.returncode
-	if returncode is 0:
-		return True
-	else:
-		return False
+    # checks if an ifix with given label is installed on the system
+    command = ["emgr"]
+    command.extend(["-c", "-L", label])
+    result = subprocess.Popen(command)
+    output = result.communicate()[0]
+    returncode = result.returncode
+    if returncode is 0:
+        return True
+    else:
+        return False
 
 def _install_ifix_pkg(package):
-	# installs ifix given package file
-	command = ["emgr"]
-	command.extend(["-e", package])
-	result = subprocess.Popen(command)
-	output = result.communicate()[0]
-	returncode = result.returncode
-	if returncode is 0:
-		return True
-	else:
-		return False
+    # installs ifix given package file
+    command = ["emgr"]
+    command.extend(["-e", package])
+    result = subprocess.Popen(command)
+    output = result.communicate()[0]
+    returncode = result.returncode
+    if returncode is 0:
+        return True
+    else:
+        return False
 
 def _remove_ifix_pkg(label):
-	command = ["emgr"]
-	command.extend(["-r", "-L", label])
-	result = subprocess.Popen(command)
-	output = result.communicate()[0]
-	returncode = result.returncode
-	if returncode is 0:
-		return True
-	else:
-		return False
+    command = ["emgr"]
+    command.extend(["-r", "-L", label])
+    result = subprocess.Popen(command)
+    output = result.communicate()[0]
+    returncode = result.returncode
+    if returncode is 0:
+        return True
+    else:
+        return False
 
 def _remove_all_efix_pkg_preview(module, preview):      
 
