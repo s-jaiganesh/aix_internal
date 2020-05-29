@@ -101,9 +101,9 @@ def _remove_all_efix_pkg_preview(module, preview):
                 result.update(result)
                 module.exit_json(**result)            
             else:
-                module.exit_json(msg="Empty arrary")
+                module.exit_json(msg="Empty array")
     else:
-            result = { 'stdout' : _out, 'stdout_lines' : _out, 'rc' : 0, 'stderr': '', 'changed' : False, 'msg' : 'There is no efix data on this system' }            
+            result = { 'stdout' : _out, 'stdout_lines' : _out, 'rc' : 0, 'stderr': '', 'changed' : False, 'msg' : 'There is no efix data on this system' }
             module.exit_json(**result)
   
 def main():
