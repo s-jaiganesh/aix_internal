@@ -33,3 +33,16 @@ ID  | NAME                    | VERSION | LIFECYCLE ENVIRONMENTS
 98  | epel_filtered_rhel7 2.0 | 2.0     |
 25  | epel_filtered_rhel7 1.0 | 1.0     |
 ----|-------------------------|---------|---------------------------------
+lines = out.split('\n',3)[-1]            
+reach=0
+_available_versions = []
+_latest_version = []
+for line in lines.splitlines():    
+    fields = line.strip().split()    
+    _available_versions.append(fields[2])
+    elif len(fields):
+        reach = 1
+    else:
+        module.fail_json(msg="unexpected return from %s command" % emgr_cmd)
+length = len(_installed_kernels) - 1
+_latest_kernel=_installed_kernels[length]
