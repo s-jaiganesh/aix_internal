@@ -7,3 +7,20 @@ kernel.x86_64                                                          3.10.0-11
 Uploading Enabled Repositories Report
 Loaded plugins: product-id, subscription-manager
 2020-06-01 05:40:46,571 [WARNING] yum:117500:Dummy-1 @logutil.py:142 - logging already initialized
+
+#!/usr/bin/python
+rc, out, err = module.run_command('yum list installed kernel')
+if rc == 0:
+    lines = out.split('\n',3)[-1]            
+    reach=0
+    for line in lines.splitlines():    
+        fields = line.strip().split()    
+        if len(fields) == 2 and 'kernel.' in fields[0]:
+			print(fields)
+            _installed_kernels.append(fields[1])
+        elif len(fields) > 2:
+            reach = 1
+        else:
+            module.fail_json(msg="unexpected return from %s command" % emgr_cmd)
+    _latest_kernel=_installed_kernels[2]
+print(_latest_kernel)
