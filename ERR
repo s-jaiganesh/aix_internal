@@ -1,39 +1,9 @@
- [WARNING]: Platform aix on host miaibk04.mia.michelin.com is using the discovered Python interpreter at /usr/bin/python, but future installation of another Python
-interpreter could change this. See https://docs.ansible.com/ansible/2.8/reference_appendices/interpreter_discovery.html for more information.
-
-fatal: [miaibk04.mia.michelin.com]: FAILED! => {
-    "ansible_facts": {
-        "discovered_interpreter_python": "/usr/bin/python"
-    }, 
-    "changed": false, 
-    "invocation": {
-        "module_args": {
-            "label": "all", 
-            "preview": true, 
-            "state": "absent"
-        }
-    }, 
-    "lables_failed": [
-        "==========", 
-        "IJ21577s5a", 
-        "IJ20783s5a"
-    ], 
-    "lables_success": [], 
-    "lables_to_remove": [
-        "==========", 
-        "IJ21577s5a", 
-        "IJ20783s5a"
-    ], 
-    "msg": "PREVIEW none of the EFIX are affected", 
-    "stderr": [
-        "Usage emgr: List interim fix data \n      emgr -l [-L <label> | -n <ifix number> | -u <VUID>] [-v{1-3}X] \n           [-a <path>]\n\nUsage emgr: Install interim fix package \n      emgr -e <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-bkpIqmoX]\n\nUsage emgr: Install concurrent update interim fix package \n      emgr -i <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-CkpIqX]\n\nUsage emgr: Install concurrent update interim fix package and commit \n      emgr -C -i <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-kpIqX]\n\nUsage emgr: Commit concurrent update interim fix to disk \n      emgr -C -L <label> [-kpIqX]\n\nUsage emgr: Remove installed interim fix\n      emgr -r -L <label> | -n <ifix num> | -u <VUID> | -f <lfile>\n           [-w <dir>] [-a <path>] [-bkpIqX] \n \nUsage emgr: Check installed interim fix\n      emgr -c [-L <label> | -n <ifix num> | -u <VUID> | -f <lfile>]\n           [-w <dir>] [-a <path>] [-v{1-3}X]\n\nUsage emgr: Mount or unmount installed interim fix\n      emgr -M | -U [-L <label> | -n <ifix num> | -u <VUID> | -f <lfile>]\n           [-w <dir>] [-a <path>] [-X]\n\nUsage emgr: Force Remove installed interim fix\n      emgr -R <ifix label> [-w <dir>] [-a <path>] [-X]\n\nUsage emgr: Package View\n      emgr -P [<Package>] [-a <path>] [-X]\n\nUsage emgr: Display interim fix package \n      emgr -d -e <ifix pkg> | -f <lfile> [-w <path>] [-v{1-3}X]\n\nFlags:\n\n -a = Alternate install directory path  -q = Quiet mode\n -b = Skip bosboot                      -r = Remove operation\n -c = Check operation                   -u = Select by VUID\n -d = Display ifix package              -v = Verbose level 1-3\n -e = Path to ifix package file         -w = Alternate work directory\n -f = List file                         -C = Commit CU ifix to disk\n -i = Path to CU ifix package file      -I = Invoke debugger for bosboot\n -k = Load debugger for bosboot         -L = Select Label\n -l = List operation                    -M = Mount operation\n -m = Mount install                     -P = Package View operation\n -n = Select by ifix number             -R = Force Remove (Unregister) operation\n -o = Overwrite                         -U = Unmount operation\n -p = Preview only                      -X = Automatic file system expansion", 
-        "Usage emgr: List interim fix data \n      emgr -l [-L <label> | -n <ifix number> | -u <VUID>] [-v{1-3}X] \n           [-a <path>]\n\nUsage emgr: Install interim fix package \n      emgr -e <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-bkpIqmoX]\n\nUsage emgr: Install concurrent update interim fix package \n      emgr -i <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-CkpIqX]\n\nUsage emgr: Install concurrent update interim fix package and commit \n      emgr -C -i <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-kpIqX]\n\nUsage emgr: Commit concurrent update interim fix to disk \n      emgr -C -L <label> [-kpIqX]\n\nUsage emgr: Remove installed interim fix\n      emgr -r -L <label> | -n <ifix num> | -u <VUID> | -f <lfile>\n           [-w <dir>] [-a <path>] [-bkpIqX] \n \nUsage emgr: Check installed interim fix\n      emgr -c [-L <label> | -n <ifix num> | -u <VUID> | -f <lfile>]\n           [-w <dir>] [-a <path>] [-v{1-3}X]\n\nUsage emgr: Mount or unmount installed interim fix\n      emgr -M | -U [-L <label> | -n <ifix num> | -u <VUID> | -f <lfile>]\n           [-w <dir>] [-a <path>] [-X]\n\nUsage emgr: Force Remove installed interim fix\n      emgr -R <ifix label> [-w <dir>] [-a <path>] [-X]\n\nUsage emgr: Package View\n      emgr -P [<Package>] [-a <path>] [-X]\n\nUsage emgr: Display interim fix package \n      emgr -d -e <ifix pkg> | -f <lfile> [-w <path>] [-v{1-3}X]\n\nFlags:\n\n -a = Alternate install directory path  -q = Quiet mode\n -b = Skip bosboot                      -r = Remove operation\n -c = Check operation                   -u = Select by VUID\n -d = Display ifix package              -v = Verbose level 1-3\n -e = Path to ifix package file         -w = Alternate work directory\n -f = List file                         -C = Commit CU ifix to disk\n -i = Path to CU ifix package file      -I = Invoke debugger for bosboot\n -k = Load debugger for bosboot         -L = Select Label\n -l = List operation                    -M = Mount operation\n -m = Mount install                     -P = Package View operation\n -n = Select by ifix number             -R = Force Remove (Unregister) operation\n -o = Overwrite                         -U = Unmount operation\n -p = Preview only                      -X = Automatic file system expansion", 
-        "Usage emgr: List interim fix data \n      emgr -l [-L <label> | -n <ifix number> | -u <VUID>] [-v{1-3}X] \n           [-a <path>]\n\nUsage emgr: Install interim fix package \n      emgr -e <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-bkpIqmoX]\n\nUsage emgr: Install concurrent update interim fix package \n      emgr -i <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-CkpIqX]\n\nUsage emgr: Install concurrent update interim fix package and commit \n      emgr -C -i <ifix pkg> | -f <lfile> [-w <dir>] [-a <path>] [-kpIqX]\n\nUsage emgr: Commit concurrent update interim fix to disk \n      emgr -C -L <label> [-kpIqX]\n\nUsage emgr: Remove installed interim fix\n      emgr -r -L <label> | -n <ifix num> | -u <VUID> | -f <lfile>\n           [-w <dir>] [-a <path>] [-bkpIqX] \n \nUsage emgr: Check installed interim fix\n      emgr -c [-L <label> | -n <ifix num> | -u <VUID> | -f <lfile>]\n           [-w <dir>] [-a <path>] [-v{1-3}X]\n\nUsage emgr: Mount or unmount installed interim fix\n      emgr -M | -U [-L <label> | -n <ifix num> | -u <VUID> | -f <lfile>]\n           [-w <dir>] [-a <path>] [-X]\n\nUsage emgr: Force Remove installed interim fix\n      emgr -R <ifix label> [-w <dir>] [-a <path>] [-X]\n\nUsage emgr: Package View\n      emgr -P [<Package>] [-a <path>] [-X]\n\nUsage emgr: Display interim fix package \n      emgr -d -e <ifix pkg> | -f <lfile> [-w <path>] [-v{1-3}X]\n\nFlags:\n\n -a = Alternate install directory path  -q = Quiet mode\n -b = Skip bosboot                      -r = Remove operation\n -c = Check operation                   -u = Select by VUID\n -d = Display ifix package              -v = Verbose level 1-3\n -e = Path to ifix package file         -w = Alternate work directory\n -f = List file                         -C = Commit CU ifix to disk\n -i = Path to CU ifix package file      -I = Invoke debugger for bosboot\n -k = Load debugger for bosboot         -L = Select Label\n -l = List operation                    -M = Mount operation\n -m = Mount install                     -P = Package View operation\n -n = Select by ifix number             -R = Force Remove (Unregister) operation\n -o = Overwrite                         -U = Unmount operation\n -p = Preview only                      -X = Automatic file system expansion"
-    ], 
-    "stderr_lines": [], 
-    "stdout": [], 
-    "stdout_lines": []
-}
-
-PLAY RECAP ************************************************************************************************************************************************************
-miaibk04.mia.michelin.com  : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+Loaded plugins: enabled_repos_upload, package_upload, product-id, search-disabled-repos, subscription-manager, tracer_upload
+Repo pc_repo forced skip_if_unavailable=True due to: /etc/puppetlabs/puppet/ssl/private_keys/augpcpdspcapp03.genpt.net.pem
+Installed Packages
+kernel.x86_64                                                          3.10.0-1062.9.1.el7                                                           @rhel-7-server-rpms
+kernel.x86_64                                                          3.10.0-1062.12.1.el7                                                          @rhel-7-server-rpms
+kernel.x86_64                                                          3.10.0-1127.el7                                                               @rhel-7-server-rpms
+Uploading Enabled Repositories Report
+Loaded plugins: product-id, subscription-manager
+2020-06-01 05:40:46,571 [WARNING] yum:117500:Dummy-1 @logutil.py:142 - logging already initialized
