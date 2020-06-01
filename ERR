@@ -24,3 +24,12 @@ if rc == 0:
             module.fail_json(msg="unexpected return from %s command" % emgr_cmd)
     _latest_kernel=_installed_kernels[2]
 print(_latest_kernel)
+
+----|-------------------------|---------|---------------------------------
+ID  | NAME                    | VERSION | LIFECYCLE ENVIRONMENTS
+----|-------------------------|---------|---------------------------------
+121 | epel_filtered_rhel7 4.0 | 4.0     | QA, Test, Prod, Library, Dev, DR
+112 | epel_filtered_rhel7 3.0 | 3.0     |
+98  | epel_filtered_rhel7 2.0 | 2.0     |
+25  | epel_filtered_rhel7 1.0 | 1.0     |
+----|-------------------------|---------|---------------------------------
