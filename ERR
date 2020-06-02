@@ -1,46 +1,40 @@
-Loaded plugins: enabled_repos_upload, package_upload, product-id, search-disabled-repos, subscription-manager, tracer_upload
-Repo pc_repo forced skip_if_unavailable=True due to: /etc/puppetlabs/puppet/ssl/private_keys/augpcpdspcapp03.genpt.net.pem
-Installed Packages
-kernel.x86_64                                                          3.10.0-1062.9.1.el7                                                           @rhel-7-server-rpms
-kernel.x86_64                                                          3.10.0-1062.12.1.el7                                                          @rhel-7-server-rpms
-kernel.x86_64                                                          3.10.0-1127.el7                                                               @rhel-7-server-rpms
-Uploading Enabled Repositories Report
-Loaded plugins: product-id, subscription-manager
-2020-06-01 05:40:46,571 [WARNING] yum:117500:Dummy-1 @logutil.py:142 - logging already initialized
-
-#!/usr/bin/python
-rc, out, err = module.run_command('yum list installed kernel')
-if rc == 0:
-    lines = out.split('\n',3)[-1]            
-    reach=0
-    for line in lines.splitlines():    
-        fields = line.strip().split()    
-        if len(fields) == 2 and 'kernel.' in fields[0]:
-			print(fields)
-            _installed_kernels.append(fields[1])
-        elif len(fields) > 2:
-            reach = 1
-        else:
-            module.fail_json(msg="unexpected return from %s command" % emgr_cmd)
-    _latest_kernel=_installed_kernels[2]
-print(_latest_kernel)
-
-----|-------------------------|---------|---------------------------------
-ID  | NAME                    | VERSION | LIFECYCLE ENVIRONMENTS
-----|-------------------------|---------|---------------------------------
-121 | epel_filtered_rhel7 4.0 | 4.0     | QA, Test, Prod, Library, Dev, DR
-112 | epel_filtered_rhel7 3.0 | 3.0     |
-98  | epel_filtered_rhel7 2.0 | 2.0     |
-25  | epel_filtered_rhel7 1.0 | 1.0     |
-----|-------------------------|---------|---------------------------------
-lines = b.split('\n',3)[-1]            
-_available_versions = []
-_latest_version = []
-for line in lines.splitlines():    
-    fields = line.strip().split()
-    if len(fields) > 3:
-        _available_versions.append(fields[3])
-
-#print(_available_versions)
-_latest_version=max(_available_versions)
-
+sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime,seclabel)
+proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
+devtmpfs on /dev type devtmpfs (rw,nosuid,seclabel,size=32882956k,nr_inodes=8220739,mode=755)
+securityfs on /sys/kernel/security type securityfs (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev,seclabel)
+devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,seclabel,gid=5,mode=620,ptmxmode=000)
+tmpfs on /run type tmpfs (rw,nosuid,nodev,seclabel,mode=755)
+tmpfs on /sys/fs/cgroup type tmpfs (ro,nosuid,nodev,noexec,seclabel,mode=755)
+cgroup on /sys/fs/cgroup/systemd type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,xattr,release_agent=/usr/lib/systemd/systemd-cgroups-agent,name=systemd)
+pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
+cgroup on /sys/fs/cgroup/devices type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,devices)
+cgroup on /sys/fs/cgroup/net_cls,net_prio type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,net_prio,net_cls)
+cgroup on /sys/fs/cgroup/hugetlb type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,hugetlb)
+cgroup on /sys/fs/cgroup/freezer type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,freezer)
+cgroup on /sys/fs/cgroup/memory type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,memory)
+cgroup on /sys/fs/cgroup/cpu,cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,cpuacct,cpu)
+cgroup on /sys/fs/cgroup/perf_event type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,perf_event)
+cgroup on /sys/fs/cgroup/blkio type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,blkio)
+cgroup on /sys/fs/cgroup/pids type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,pids)
+cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,cpuset)
+configfs on /sys/kernel/config type configfs (rw,relatime)
+/dev/mapper/vg01-root on / type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+selinuxfs on /sys/fs/selinux type selinuxfs (rw,relatime)
+hugetlbfs on /dev/hugepages type hugetlbfs (rw,relatime,seclabel)
+systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=31,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=20655)
+debugfs on /sys/kernel/debug type debugfs (rw,relatime)
+mqueue on /dev/mqueue type mqueue (rw,relatime,seclabel)
+/dev/sda1 on /boot type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+/dev/mapper/vg01-home on /home type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+/dev/mapper/vg01-var on /var type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+/dev/mapper/vg01-tmp on /tmp type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+/dev/mapper/vgdata-data on /var/data type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+/dev/mapper/vg01-opt on /opt type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+/dev/mapper/vg01-var_log on /var/log type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+/dev/mapper/vg01-var_log_audit on /var/log/audit type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw,relatime)
+/etc/auto.home on /home/ldap type autofs (rw,relatime,fd=5,pgrp=2049,timeout=300,minproto=5,maxproto=5,indirect,pipe_ino=42278)
+binfmt_misc on /proc/sys/fs/binfmt_misc type binfmt_misc (rw,relatime)
+atlclus02-nas01-nfs-lif1-7:/home_dirs_linux/xpctr640486 on /home/ldap/xpctr640486 type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,soft,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.5.150.79,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.5.150.79)
+tmpfs on /run/user/756267399 type tmpfs (rw,nosuid,nodev,relatime,seclabel,size=6578952k,mode=700,uid=756267399,gid=971000513)
