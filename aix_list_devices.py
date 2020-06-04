@@ -61,7 +61,7 @@ def _list_devices(module, name, _state):
         _device = 'EtherChannel'
 
     lsdev_cmd = module.get_bin_path('lsdev', True)
-    rc, out, err = module.run_command("%s '-C'" % (lsdev_cmd)
+    rc, out, err = module.run_command("%s '-C'" % (lsdev_cmd))
     if rc is 0:        
         _devices = []
         for line in out.splitlines():
