@@ -9,131 +9,98 @@ ANSIBLE_METADATA = {
     'status': ['preview'],
     'supported_by': 'none'
 }
-
-DOCUMENTATION = r'''
+DOCUMENTATION = '''
 ---
-author:
-- Mr. Jai
-module: bosboot
-short_description: Collect precheck before patching
+module: aix_list_devices
+short_description: lsdev command module
+version_added: "1.0"
 description:
-- This module creates boot image on disks
-version_added: '1.0'
-options:
-  name:
-    description:
-    - name of action example, bosboot, bootlist
-    type: str
-    default: yes
+    - "This is a custom module for lsdev -C command"
+author:
+    - Jai Ganesh
 '''
 
-EXAMPLES = r'''
-- name: Create a volume group datavg
-  bosboot:
-    name: run
-    bootlist: True
+EXAMPLES = '''
+- name: Get disks that are available
+  aix_list_devices:
+    name: disk
+    state: present
     
+- name: Get disks that are Defined or unavailable state
+  aix_list_devices:
+    name: disk
+    state: absent
+    
+- name: Get fcs that are available
+  aix_list_devices:
+    name: fcs   
+    state: present
+    
+- name: List ethernet from Lsdev command
+  aix_list_devices:
+    name: ent   
+    state: all
+    
+- name: List eth channel from Lsdev command
+  aix_list_devices:
+    name: port
+    state: all
 '''
-
-RETURN = r''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
 
-def bosboot(module):
-    
-    bosboot_cmd = module.get_bin_path('bosboot', True)
-    rc, out, err = module.run_command("%s -a" % (bosboot_cmd))
-    if rc != 0:
-        changed = False
-        err = err.rstrip(b"\r\n")
-        stderr=err
-        rc=rc
-        module.exit_json(msg="unable to run %s command." % bosboot_cmd)
-    else:             
-        out = out.rstrip(b"\r\n")
-        stdout=out
-        rc=rc
-        changed = True
-        bosboot_msg = "bosboot to executed"
-        module.exit_json(msg="successfully executed")
-    
-def bootlist(module):      
-        
-    lslv_cmd = module.get_bin_path('lslv', True)
-    rc, hd5_pvs, err = module.run_command("%s -l '%s'" % (lslv_cmd, 'hd5'))
-    if rc != 0:
-        changed = False
-        module.fail_json(msg="67:Failing to execute '%s' command." % lslv_cmd)
+def _list_devices(module, name, _state):
 
-    pvs_to_set_bootlist = []
-    for line in hd5_pvs.splitlines():
-        if 'hdisk' in line:
-            fields = line.strip().split()
-            pvs_to_set_bootlist.append(fields[0])
-            hdisk = fields[0]
-            state = fields[1]
-    
-    bootlist_cmd = module.get_bin_path('bootlist', True)
-    
-    if len(pvs_to_set_bootlist) == 2:
-        
-        for disk in pvs_to_set_bootlist:
-            rc, out, err = module.run_command("%s -m normal %s %s" % (bootlist_cmd, (hdisk[0]), (hdisk[1])))
-            if rc != 0:
-                changed = False
-                err = err.rstrip(b"\r\n")
-                stderr=err
-                rc=rc
-                module.fail_json(msg="88:Failing to execute '%s' command." % bootlist_cmd)
+    if name == 'disk':
+        _device = 'hdisk'
+    elif name == 'fcs':
+        _device = 'fcs'
+    elif name == 'ent':
+        _device = 'ent'
+    elif name == 'port':
+        _device = 'EtherChannel'
+
+    lsdev_cmd = module.get_bin_path('lsdev', True)
+    rc, out, err = module.run_command("%s '-C'" % (lsdev_cmd)
+    if rc is 0:        
+        _devices = []
+        for line in out.splitlines():
+            if _device in line:
+                if _state == 'all':
+                    _devices.append(line)
+                elif _state == 'present':
+                    fields = line.strip().split()
+                    if fields[1] == 'Available':
+                        _devices.append(line)
+                elif _state == 'absent':
+                    fields = line.strip().split()
+                    if fields[1] != 'Available':
+                        _devices.append(line)
+                else:
+                    module.fail_json(msg = "Invalid option")
+                
+            if len(_devices) is 0:
+                result = { 'stdout':'', 'stderr':'', 'rc':rc, 'changed':False, 'msg': "Device not found" }
+                module.exit_json(**result)
             else:
-                out = out.rstrip(b"\r\n")
-                stdout=out
-                rc=rc
-                changed = True
-                bootlist_msg = "Bootlist has been set successfully"
-                module.exit_json(msg="bootlist set successfully")
+                result = { 'stdout':_devices, 'stderr':'', 'rc':rc, 'changed':False, 'msg': "command successful" }
+                module.exit_json(**result)
+                
+    if rc != 0:
+        result = { 'stdout': '', 'stderr':out, 'rc':rc, 'changed':False, 'msg': "Failed to execute the command" }
+        module.exit_json(**result)
 
-    elif len(pvs_to_set_bootlist) == 1:
-        
-        rc, out, err = module.run_command("%s -m normal %s" % (bootlist_cmd, pvs_to_set_bootlist[0]))
-        if rc != 0:
-            changed = False
-            err = err.rstrip(b"\r\n")
-            stderr=err
-            rc=rc
-            module.fail_json(msg="104:Failing to execute '%s' command." % bootlist_cmd)
-        else:
-            out = out.rstrip(b"\r\n")
-            stdout=out
-            rc=rc
-            changed = True
-            bootlist_msg = "Bootlist has been set successfully"
-            module.exit_json(msg="bootlist set successfully")
-    else:
-        changed = False
-        bootlist_msg = "No Boot image present on any PV"
-        module.fail_json(msg="114:Failing to execute '%s' command." % lslv_cmd)
-
-    msg = bootlist_msg
-    return changed, msg
-           
-    
 def main():
     module = AnsibleModule(
         argument_spec=dict(
             name=dict(type='str', required=True),
-            bootlist=dict(type='bool',default=False),
+            state=dict(type='str', required=True, choices=['present', 'absent', 'all']),
         ),
         supports_check_mode=True,
     )
-    if module.params['name'] == 'run':
-        bosboot(module)
-        if module.params['bootlist'] is True:
-            bootlist(module)
-        else:
-            module.fail_json(msg="Not valid input")
-    else:
-        module.fail_json(msg="Not valid input")
+    name = module.params['name']
+    state = module.params['state']
+    _list_devices(module, name, state)   
         
 if __name__ == '__main__':
     main()
