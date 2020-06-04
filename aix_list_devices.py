@@ -11,7 +11,7 @@ ANSIBLE_METADATA = {
 }
 DOCUMENTATION = '''
 ---
-module: aix_devices
+module: aix_list_devices
 short_description: lsdev command module
 
 version_added: "1.0"
@@ -25,19 +25,19 @@ author:
 
 EXAMPLES = '''
 - name: List disks from Lsdev command
-  aix_devices:
+  aix_list_devices:
     name: disk
 
 - name: List fcs from Lsdev command
-  aix_devices:
+  aix_list_devices:
     name: fcs    
 
 - name: List ethernet from Lsdev command
-  aix_devices:
+  aix_list_devices:
     name: ent    
 
 - name: List eth channel from Lsdev command
-  aix_devices:
+  aix_list_devices:
     name: port
 '''
 
