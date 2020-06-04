@@ -45,11 +45,15 @@ def _update_all(module, preview, path):
     else:
         udpate_all_cmd = "%s '%s' %s '%s' " % (cmd, '-d', path, '-pY')
 
-    rc, out, err = module.run_command("%s -d %s -pY" % (udpate_all_cmd, path))
+    rc, out, err = module.run_command("%s -d %s -pY" % (udpate_all_cmd, path))    
     if rc is 0:
-        return True
+        msg = "command: %s preview: %s has completed successfully" % (udpate_all_cmd, preview)
+        result = { 'stdout' : out, 'stderr' : err, 'rc' : rc, 'changed' : True, 'msg' : msg }
+        module.exit_json(**result)
     else:
-        return False
+        msg = "command: %s preview: %s has completed successfully" % (udpate_all_cmd, preview)
+        result = { 'stdout' : out, 'stderr' : err, 'rc' : rc, 'changed' : False, 'msg' : msg }
+        module.exit_json(**result)
 
 def main():
     module = AnsibleModule(
@@ -62,10 +66,7 @@ def main():
     path = module.params['path']
     preview = module.params['preview']
 
-    if _update_all(module, preview, path):
-        module.exit_json(msg="command: %s preview: %s has completed successfully" % cmd, preview)
-    else:
-        module.fail_json(msg="command: %s preview: %s is failed" % cmd, preview)
+    _update_all(module, preview, path)    
 
 if __name__ == '__main__':
     main()
