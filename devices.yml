@@ -1,0 +1,36 @@
+---
+- hosts: localhost
+  remote_user:
+  gather_facts: yes
+
+  tasks:  
+    - name: get hdisk info
+      aix_list_devices:
+        name: disk
+      register: disk_info
+      become: true
+      
+    - name: get fcs info
+      aix_list_devices:
+        name: fcs
+      register: fcs_info
+      become: true
+      
+    - name: get ent info
+      aix_list_devices:
+        name: ent
+      register: ent_info
+      become: true
+      
+    - name: get etherchannel info
+      aix_list_devices:
+        name: port
+      register: eth_channel_info
+      become: true
+
+   - debug:
+        msg:
+          - "{{ disk_info }}"
+          - "{{ fcs_info }}"
+          - "{{ ent_info }}"
+          - "{{ eth_channel_info }}"
