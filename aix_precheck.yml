@@ -1,0 +1,101 @@
+---
+- hosts: all
+  remote_user: "{{ lookup('env','USER') }}"
+  become: true
+  become_user: root
+  gather_facts: yes
+  vars:
+    - patchdir: "{{ 'AIX-Packages-Q1_2020/AIX-7.1-7100-05-05-1939_with_java-ssl' if ansible_distribution_version == '7.1' else 'AIX-Packages-Q1_2020/AIX-7.2-7200-04-01-1939_with_java-ssl' }}"
+     #- patchdir: "{{ 'AIX-Packages-Q1_2020/7.1-java-alone' if ansible_distribution_version == '7.1' else 'AIX-Packages-Q1_2020/7.2-java-alone' }}"
+     - trgtosvrsn: "{{ '7100-05-05-1939' if ansible_distribution_version == '7.1' else '7200-04-01-1939' }}"
+     #- nonrebootpatch: yes    
+
+  tasks:
+    - name: Mount points
+      command: df -k
+      register: mnts
+	  
+    - name: get hdisk 
+      aix_list_devices:
+        name: disk
+      register: disk_info
+      become: true
+	  
+    - name: get lspv output 
+      command: lspv        
+      register: pvs
+      become: true
+	  
+    - name: get fcs 
+      aix_list_devices:
+        name: fcs
+      register: fcs_info
+      become: true
+      
+    - name: get ent 
+      aix_list_devices:
+        name: ent
+      register: ent_info
+      become: true
+
+    - name: get Path
+      command: lspath        
+      register: paths
+      become: true
+
+    - name: last boot disk
+      command: bootinfo -b
+      register: lastbootdisk
+      become: true
+
+    - name: get lsvg output
+      command: lsvg
+      register: lsvg
+      become: true
+	  
+    - name: get active lsvg output
+      command: lsvg -o
+      register: lsvgactive
+      become: true
+
+
+    ifconfig -a
+	netstat -rn
+
+      
+    - name: get etherchannel 
+      aix_list_devices:
+        name: port
+      register: eth_channel_info
+      become: true	
+	  
+    - name: lparstat
+      command: lparstat -i        
+      register: lparstat
+      become: true	  
+
+    - name: showmount
+      command: showmount -a        
+      register: showmount
+      become: true
+	  
+    - name: Run bosboot and set boot list
+      bosboot:
+        state: present
+        bootlist: True
+
+    - name: emgr remove all labels - preview
+      emgr:
+        label: all
+        state: absent
+        preview: True
+      register: emgr
+      become: true
+	  
+    - name: emgr remove all labels
+      emgr:
+        label: all
+        state: absent
+        preview: False
+      register: emgr
+      become: true
