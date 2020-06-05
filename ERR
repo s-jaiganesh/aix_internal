@@ -1,40 +1,17 @@
-sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime,seclabel)
-proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
-devtmpfs on /dev type devtmpfs (rw,nosuid,seclabel,size=32882956k,nr_inodes=8220739,mode=755)
-securityfs on /sys/kernel/security type securityfs (rw,nosuid,nodev,noexec,relatime)
-tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev,seclabel)
-devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,seclabel,gid=5,mode=620,ptmxmode=000)
-tmpfs on /run type tmpfs (rw,nosuid,nodev,seclabel,mode=755)
-tmpfs on /sys/fs/cgroup type tmpfs (ro,nosuid,nodev,noexec,seclabel,mode=755)
-cgroup on /sys/fs/cgroup/systemd type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,xattr,release_agent=/usr/lib/systemd/systemd-cgroups-agent,name=systemd)
-pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
-cgroup on /sys/fs/cgroup/devices type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,devices)
-cgroup on /sys/fs/cgroup/net_cls,net_prio type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,net_prio,net_cls)
-cgroup on /sys/fs/cgroup/hugetlb type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,hugetlb)
-cgroup on /sys/fs/cgroup/freezer type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,freezer)
-cgroup on /sys/fs/cgroup/memory type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,memory)
-cgroup on /sys/fs/cgroup/cpu,cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,cpuacct,cpu)
-cgroup on /sys/fs/cgroup/perf_event type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,perf_event)
-cgroup on /sys/fs/cgroup/blkio type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,blkio)
-cgroup on /sys/fs/cgroup/pids type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,pids)
-cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,cpuset)
-configfs on /sys/kernel/config type configfs (rw,relatime)
-/dev/mapper/vg01-root on / type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
-selinuxfs on /sys/fs/selinux type selinuxfs (rw,relatime)
-hugetlbfs on /dev/hugepages type hugetlbfs (rw,relatime,seclabel)
-systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=31,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=20655)
-debugfs on /sys/kernel/debug type debugfs (rw,relatime)
-mqueue on /dev/mqueue type mqueue (rw,relatime,seclabel)
-/dev/sda1 on /boot type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
-/dev/mapper/vg01-home on /home type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
-/dev/mapper/vg01-var on /var type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
-/dev/mapper/vg01-tmp on /tmp type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
-/dev/mapper/vgdata-data on /var/data type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
-/dev/mapper/vg01-opt on /opt type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
-/dev/mapper/vg01-var_log on /var/log type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
-/dev/mapper/vg01-var_log_audit on /var/log/audit type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
-sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw,relatime)
-/etc/auto.home on /home/ldap type autofs (rw,relatime,fd=5,pgrp=2049,timeout=300,minproto=5,maxproto=5,indirect,pipe_ino=42278)
-binfmt_misc on /proc/sys/fs/binfmt_misc type binfmt_misc (rw,relatime)
-atlclus02-nas01-nfs-lif1-7:/home_dirs_linux/xpctr640486 on /home/ldap/xpctr640486 type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,soft,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.5.150.79,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.5.150.79)
-tmpfs on /run/user/756267399 type tmpfs (rw,nosuid,nodev,relatime,seclabel,size=6578952k,mode=700,uid=756267399,gid=971000513)
+rootvg:
+LV NAME             TYPE       LPs     PPs     PVs  LV STATE      MOUNT POINT
+hd5                 boot       1       1       1    closed/syncd  N/A
+hd6                 paging     128     128     1    open/syncd    N/A
+hd8                 jfs2log    1       1       1    open/syncd    N/A
+hd4                 jfs2       16      16      1    open/syncd    /
+hd2                 jfs2       128     128     1    open/syncd    /usr
+hd9var              jfs2       128     128     1    open/syncd    /var
+hd3                 jfs2       80      80      1    open/syncd    /tmp
+hd1                 jfs2       16      16      1    open/syncd    /home
+hd10opt             jfs2       80      80      1    open/syncd    /opt
+hd11admin           jfs2       1       1       1    open/syncd    /admin
+lg_dumplv           sysdump    43      43      1    open/syncd    N/A
+livedump            jfs2       2       2       1    open/syncd    /var/adm/ras/livedump
+loglv00             jfslog     1       1       1    closed/syncd  N/A
+tracklv             jfs2       16      16      1    open/syncd    /track
+auditlv             jfs2       32      32      1    open/syncd    /audit
