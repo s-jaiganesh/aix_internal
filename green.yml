@@ -1,0 +1,514 @@
+---
+- hosts: all
+  remote_user: "{{ lookup('env','USER') }}"
+  become: true
+  become_user: root
+  gather_facts: yes
+  vars:
+    month_dict: { '01': "Jan", '02': "Feb", '03': "Mar", '04': "Apr", '05': "May", '06': "Jun", '07': "Jul", '08': "Aug", '09': "Sep", '10': "Oct", '11': "Nov", '12': "Dec" }
+    month_num: "{{ lookup('pipe', 'date +%m') }}"
+    month_char: |-
+          {% if month_dict.has_key(month_num) %}
+          {{month_dict[month_num]|trim}}
+          {% endif %}
+    file_name: /var/data/green_fields_{{ month_char |trim}}
+
+  tasks:
+    - name: "Getting current timestamp"
+      set_fact:
+        timestamp_fact: "{{ lookup('pipe', 'date +%Y-%m-%d-%H-%M-%S') }}"
+        timestamp_0: "{{ lookup('pipe', 'date +%Y-%m-%d') }}"
+
+    - debug:
+        var: "{{ timestamp_fact }}"
+
+    - name: Create directory according to the environment
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}"
+        state: directory
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Check the service status
+      GPC_service:
+        name: all
+        query: True
+        state: present
+      register: serstatus
+
+    - name: Create a file service.
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/services.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the  output to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/services.txt"
+        line: "{{ serstatus.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Check the Installed RPM packages Info
+      GPC_rpm:
+        package: all
+        query: True
+        state: present
+      register: rpminfo
+
+    - name: Create a file rpm info.
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/rpminfo.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the  output to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/rpminfo.txt"
+        line: "{{ rpminfo.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Create a Directory with Server name
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}"
+        state: directory
+        mode: 744
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Chech VCS cluster status
+      GPC_vcs_hastatus:
+        name: status
+        state: present
+      ignore_errors: true
+      register: vcs_cluster
+
+    - name: Create a file to save cluster output
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/VCS_cluster.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      when:
+        - vcs_cluster.rc == 0
+        - item.key in inventory_hostname
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the VCS cluster output to the newly created file
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/VCS_cluster.txt"
+        line: "{{ vcs_cluster.stdout }}"
+      delegate_to: "127.0.0.1"
+      when:
+        - vcs_cluster.rc == 0
+        - item.key in inventory_hostname
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Check Redhat cluster status
+      command: clustat
+      register: red_cluster
+      ignore_errors: true
+
+    - name: Create a file to save cluster output
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/Redht_cluster.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      when:
+        - red_cluster.rc == 0
+        - item.key in inventory_hostname
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the VCS cluster output to the newly created file
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/Redht_cluster.txt"
+        line: "{{ red_cluster.stdout }}"
+      delegate_to: "127.0.0.1"
+      when:
+        - red_cluster.rc == 0
+        - item.key in inventory_hostname
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Get server boot time
+      command: uptime
+      register: server_uptime
+
+    - name: Create a file to save the kernal and boot time output
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/server_uptime.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the output of Kernal and boot time to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/server_uptime.txt"
+        line: "{{ server_uptime.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Checking the server IP
+      GPC_net_interface.py:
+        name: status
+      register: net_route
+
+    - name: Checking the route table
+      GPC_net_static_route:
+        name: show
+      register: rout
+
+    - name: Create a file to save the Networking IP and route table Info
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/networking.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the output of networking to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/networking.txt"
+        line: "{{ net_route.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the output of Route Table to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/networking.txt"
+        line: "{{ rout.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Create a directory to save the disk information
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk"
+        state: directory
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Get Disk FS
+      GPC_df:
+        flag: ThP
+      register: dfs
+
+    - name: Create a file inside Disk folder to save the disk info
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk/disk_fs.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the Disk output to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk/disk_fs.txt"
+        line: "{{ dfs.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Get fstab entries
+      GPC_cat:
+        file: /etc/fstab
+      register: fstinfo
+
+    - name: Create a file inside Disk folder to save the fstab info
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk/fstabinfo.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the fstab output to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk/fstabinfo.txt"
+        line: "{{ fstinfo.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: List of block devices
+      command: lsblk
+      register: blkdev
+      ignore_errors: true
+      delegate_to: "127.0.0.1"
+      when: ansible_distribution_major_version == "6" or ansible_distribution_major_version == "7"
+
+    - name: Create a file to save blkdev output
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk/block_devices.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the Disk output to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk/block_devices.txt"
+        line: "{{ blkdev.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: List of Volume Groups
+      GPC_pvs:
+        name: listdevices
+      register: lvm_out
+      delegate_to: "127.0.0.1"
+
+    - name: Create a file inside Disk folder to save lvm info
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk/lvm_out.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the output to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk/lvm_out.txt"
+        line: "{{ lvm_out.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Check Read Only FS
+      GPC_cat:
+        file: /proc/mounts
+      register: ro_out
+      delegate_to: "127.0.0.1"
+
+    - name: Create a file inside Disk folder to save the disk info
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk/proc_mounts.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the Disk output to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk/proc_mounts.txt"
+        line: "{{ ro_out.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+#    - name: Check the NFS
+#      GPC_mount:
+#        path: all
+#        fstype: nfs
+#        state: present
+#      register: nfs
+    - name: Check the NFS
+      shell: mount -l | grep nfs
+      register: nfs
+
+    - name: Create a file to save the output of NFS.
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk/NFS_automnt_output.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the output of NFS and automount to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/disk/NFS_automnt_output.txt"
+        line: "{{ nfs.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Create a log directory
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/log"
+        state: directory
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: check host entries
+      GPC_cat:
+        file: /etc/hosts
+      register: hostentries
+
+    - name: Create a file to save the output of hostentries.
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/log/host_entries.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the output hosts to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/log/host_entries.txt"
+        line: "{{ hostentries.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: check sysconfig_network
+      GPC_cat:
+        file: /etc/sysconfig/network
+      register: sysnetwork
+
+    - name: Create a file to save the output of sysconfig_network.
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/log/sysconfig_network.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the output of network to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/log/sysconfig_network.txt"
+        line: "{{ sysnetwork.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Create a directory for network scripts
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/log/networkscripts"
+        state: directory
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the network_scripts files to Log directory
+      when: item.key in inventory_hostname
+      copy:
+        src: /etc/sysconfig/network-scripts/
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/log/network-scripts/"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Create a directory for satellite information
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/satinfo"
+        state: directory
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Check the satellite environment
+      GPC_redhat_subscription:
+        name: identity
+      register: identity
+
+    - name: Create a file to save subscription identity.
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/satinfo/identity.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the  output to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/satinfo/identity.txt"
+        line: "{{ identity.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Check the satellite status
+      GPC_redhat_subscription:
+        name: list
+      register: sublist
+
+    - name: Create a file to save subscription list.
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/satinfo/sublist.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: Copy the  output to the newly created file
+      when: item.key in inventory_hostname
+      lineinfile:
+        dest: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}/satinfo/sublist.txt"
+        line: "{{ sublist.stdout }}"
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
+
+    - name: to check yum update errors
+      GPC_yum:
+        name: assumeno
+        state: latest
+      register: upd
+      ignore_errors: yes
+
+    - name: debug yum update errors
+      debug:
+        msg:
+          - "{{ upd }}"
+      when: "'error' in upd"
+
+    - name: create list of server having error
+      lineinfile:
+        dest: "/tmp/yum_update_issue_list_{{ lookup('env','USER') }}_{{ ansible_date_time.date }}"
+        create: yes
+        line: "{{inventory_hostname}}"
+      when:
+        - upd != ''
+      delegate_to: "127.0.0.1"
+
+    - name: Start Puppet service
+      service:
+        name: puppet
+        state: started
+        enabled: yes
+
+    - name: Start PXP-Puppet agent
+      service:
+        name: pxp-agent
+        state: started
+        enabled: yes
+
+    - name: Changing permissions
+      when: item.key in inventory_hostname
+      file:
+        path: "{{ file_name }}/{{ item.value }}_{{ timestamp_0 }}/{{ inventory_hostname + '_' + timestamp_fact }}"
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      with_dict: { 'dv': 'DEV', 'ts': 'TEST', 'qa': 'QA', 'pd':'PROD', 'dr': 'DR', }
