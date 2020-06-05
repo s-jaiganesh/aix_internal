@@ -23,21 +23,21 @@ author:
 
 EXAMPLES = '''
 - name: Get result of lsvg <vgname>
-  list_vg:
+  aix_list_vg:
     name: datavg    
 
 - name: Get result of lsvg 
-  list_vg:
+  aix_list_vg:
     name: all
     state: all
 
 - name: Get result of lsvg -o
-  list_vg:
+  aix_list_vg:
     name: all
     state: active
 
 - name: Get result of in active VGs
-  list_vg:
+  aix_list_vg:
     name: all
     state: inactive
 
