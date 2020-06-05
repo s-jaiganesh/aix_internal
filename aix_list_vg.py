@@ -91,7 +91,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=dict(
-            vgname=dict(type='str', required=False),
+            name=dict(type='str', required=False),
             state=dict(type='str'),
         ),
         supports_check_mode=True,
@@ -99,7 +99,7 @@ def main():
     if module.check_mode:
         module.exit_json(**result)
 
-    vgname = module.params['vgname']    
+    vgname = module.params['name']    
     
     if vgname == 'all' and state == 'all':
         _list_vg(module)
