@@ -5,33 +5,49 @@
   become_user: root
   gather_facts: yes
   vars:
-    - patchdir: "{{ 'AIX-Packages-Q1_2020/AIX-7.1-7100-05-05-1939_with_java-ssl' if ansible_distribution_version == '7.1' else 'AIX-Packages-Q1_2020/AIX-7.2-7200-04-01-1939_with_java-ssl' }}"
-     #- patchdir: "{{ 'AIX-Packages-Q1_2020/7.1-java-alone' if ansible_distribution_version == '7.1' else 'AIX-Packages-Q1_2020/7.2-java-alone' }}"
-     - trgtosvrsn: "{{ '7100-05-05-1939' if ansible_distribution_version == '7.1' else '7200-04-01-1939' }}"
-     #- nonrebootpatch: yes    
+     dir_path: /tmp
 
   tasks:
+
+    - name: "Getting current timestamp"
+      set_fact:
+        timestamp_fact: "{{ lookup('pipe', 'date +%Y-%m-%d') }}"
+
+    - name: Create directory 
+      file:
+        path: "{{ dir_path }}/{{ timestamp_fact }}"
+        state: directory
+        mode: 0755
+      delegate_to: "127.0.0.1"
+
+    - name: Create file
+      file:
+        path: "{{ dir_path }}/{{ timestamp_fact }}/{{ inventory_hostname }}.txt"
+        state: touch
+        mode: 0755
+      delegate_to: "127.0.0.1"
+      
     - name: Mount points
       command: df -k
       register: mnts
-	  
-    - name: get hdisk 
+
+    - name: get hdisk
       aix_list_devices:
         name: disk
       register: disk_info
       become: true
-	  
+
     - name: get lspv output 
-      command: lspv        
+      command: lspv
       register: pvs
       become: true
-	  
+
     - name: get fcs 
       aix_list_devices:
         name: fcs
       register: fcs_info
       become: true
-      
+
     - name: get ent 
       aix_list_devices:
         name: ent
@@ -39,7 +55,7 @@
       become: true
 
     - name: get Path
-      command: lspath        
+      command: lspath
       register: paths
       become: true
 
@@ -49,53 +65,65 @@
       become: true
 
     - name: get lsvg output
-      command: lsvg
+      aix_list_vg:
+         name: all
+         state: all
       register: lsvg
       become: true
-	  
+
     - name: get active lsvg output
-      command: lsvg -o
+      aix_list_vg:
+         name: all
+         state: active
       register: lsvgactive
       become: true
 
+    - name: get ifconfig -a output
+      command: ifconfig -a
+      register: ifconfig
+      become: true
 
-    ifconfig -a
-	netstat -rn
+    - name: get route output
+      command: netstat -rn
+      register: route
+      become: true
 
-      
     - name: get etherchannel 
       aix_list_devices:
         name: port
       register: eth_channel_info
-      become: true	
-	  
+      become: true
+
     - name: lparstat
-      command: lparstat -i        
+      command: lparstat -i
       register: lparstat
-      become: true	  
+      become: true
 
     - name: showmount
-      command: showmount -a        
+      command: showmount -a
       register: showmount
       become: true
-	  
-    - name: Run bosboot and set boot list
-      bosboot:
-        state: present
-        bootlist: True
 
-    - name: emgr remove all labels - preview
-      emgr:
-        label: all
-        state: absent
-        preview: True
-      register: emgr
-      become: true
-	  
-    - name: emgr remove all labels
-      emgr:
-        label: all
-        state: absent
-        preview: False
-      register: emgr
-      become: true
+    - name: Copy the  output to the newly created file
+      lineinfile:
+        dest:  "{{ dir_path }}/{{ timestamp_fact }}/{{ inventory_hostname }}.txt"
+        line: "{{ item.stdout | length}}"
+      delegate_to: "127.0.0.1"
+      with_items:
+        - "mounted filesystems: {{ mnts.stdout_lines|length }}"
+        - "Total Disk: {{ disk_info.stdout_lines|length }}"
+        - "lspv: {{ pvs.stdout_lines|length }}"
+        - "Total fcs: {{ fcs_info.stdout_lines|length }}"
+        - "Total ent: {{ ent_info.stdout_lines|length }}"
+        - "lspath: {{ paths.stdout_lines|length }}"
+        - "Last boot disk: {{ lastbootdisk.stdout_lines|length }}"
+        - "Total lsvg: {{ lsvg.stdout_lines|length }}"
+        - "Active vg: {{ lsvgactive.stdout_lines|length }}"
+        - "ifconfig details"
+        - "{{ ifconfig.stdout_lines }}"
+        - "Route details"
+        - "{{ route.stdout_lines }}"
+        - "Lparstat-i"
+        - "{{ lparstat.stdout_lines }}"
+        - "Showmount"
+        - "{{ showmount.stdout_lines }}" 
