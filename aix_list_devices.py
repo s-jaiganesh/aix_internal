@@ -59,6 +59,10 @@ def _list_devices(module, name, _state):
         _device = 'ent'
     elif name == 'port':
         _device = 'EtherChannel'
+    elif name == 'iocp':
+        _device == 'iocp'
+    else:
+        module.fail_json(msg = "Invalid option")
 
     lsdev_cmd = module.get_bin_path('lsdev', True)
     rc, out, err = module.run_command("%s '-C'" % (lsdev_cmd))
