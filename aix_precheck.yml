@@ -9,60 +9,67 @@
 
   tasks:
 
-    - name: "Getting current timestamp"
-      set_fact:
-        timestamp_fact: "{{ lookup('pipe', 'date +%Y-%m-%d') }}"
+     - name: "Getting current timestamp"
+       set_fact:
+          timestamp_fact: "{{ lookup('pipe', 'date +%Y-%m-%d') }}"
 
-    - name: Create directory 
-      file:
-        path: "{{ dir_path }}/{{ timestamp_fact }}"
-        state: directory
-        mode: 0755
-      delegate_to: "127.0.0.1"
+     - name: Create directory 
+       file:
+          path: "{{ dir_path }}/{{ timestamp_fact }}"
+          state: directory
+          mode: 0755
+       delegate_to: "127.0.0.1"
 
-    - name: Create file
-      file:
-        path: "{{ dir_path }}/{{ timestamp_fact }}/{{ inventory_hostname }}.txt"
-        state: touch
-        mode: 0755
-      delegate_to: "127.0.0.1"
-      
+     - name: Create file
+       file:
+          path: "{{ dir_path }}/{{ timestamp_fact }}/{{ inventory_hostname }}.txt"
+          state: touch
+          mode: 0755
+       delegate_to: "127.0.0.1"
+
     - name: Mount points
       command: df -k
       register: mnts
+      ignore_errors: true
 
     - name: get hdisk
       aix_list_devices:
         name: disk
       register: disk_info
       become: true
+      ignore_errors: true
 
     - name: get lspv output 
       command: lspv
       register: pvs
       become: true
+      ignore_errors: true
 
     - name: get fcs 
       aix_list_devices:
         name: fcs
       register: fcs_info
       become: true
+      ignore_errors: true
 
     - name: get ent 
       aix_list_devices:
         name: ent
       register: ent_info
       become: true
+      ignore_errors: true
 
     - name: get Path
       command: lspath
       register: paths
       become: true
+      ignore_errors: true
 
     - name: last boot disk
       command: bootinfo -b
       register: lastbootdisk
       become: true
+      ignore_errors: true
 
     - name: get lsvg output
       aix_list_vg:
@@ -70,6 +77,7 @@
          state: all
       register: lsvg
       become: true
+      ignore_errors: true
 
     - name: get active lsvg output
       aix_list_vg:
@@ -77,33 +85,74 @@
          state: active
       register: lsvgactive
       become: true
+      ignore_errors: true
+
+    - name: Get closed LVs
+      aix_list_lv:
+        name: all
+        state: closed
+      register: closedlvs
+      ignore_errors: true
+
+    - name: Get stale LVs
+      aix_list_lv:
+        name: all
+        state: stale
+      register: stalelvs
+      ignore_errors: true
 
     - name: get ifconfig -a output
       command: ifconfig -a
       register: ifconfig
       become: true
+      ignore_errors: true
 
     - name: get route output
       command: netstat -rn
       register: route
       become: true
+      ignore_errors: true
 
     - name: get etherchannel 
       aix_list_devices:
         name: port
       register: eth_channel_info
       become: true
+      ignore_errors: true
+
+    - name: lparstat
+      command: lsattr -E -a backup_adapter -l {{ item }}
+      register: lparstat
+      become: true
+      with_items:
+            - "{{ eth_channel_info }}"
+      ignore_errors: true
 
     - name: lparstat
       command: lparstat -i
       register: lparstat
       become: true
+      ignore_errors: true
 
     - name: showmount
       command: showmount -a
       register: showmount
       become: true
+      ignore_errors: true
 
+    - name: get etherchannel 
+      aix_list_devices:
+        name: iocp
+      register: iocp
+      become: true
+      ignore_errors: true
+
+    - name: List paging space
+      command: lsps -a
+      register: paging
+      become: true
+      ignore_errors: true
+      
     - name: Copy the  output to the newly created file
       lineinfile:
         dest:  "{{ dir_path }}/{{ timestamp_fact }}/{{ inventory_hostname }}.txt"
@@ -119,6 +168,8 @@
         - "Last boot disk: {{ lastbootdisk.stdout_lines|length }}"
         - "Total lsvg: {{ lsvg.stdout_lines|length }}"
         - "Active vg: {{ lsvgactive.stdout_lines|length }}"
+        - "Closed lvs: {{ lsvgactive.stdout_lines|length }}"
+        - "Stale lvs: {{ lsvgactive.stdout_lines|length }}"
         - "ifconfig details"
         - "{{ ifconfig.stdout_lines }}"
         - "Route details"
@@ -127,3 +178,219 @@
         - "{{ lparstat.stdout_lines }}"
         - "Showmount"
         - "{{ showmount.stdout_lines }}" 
+        - "icop"
+        - "{{ iocp.stdout_lines }}"
+        - "paging"
+        - "{{ paging.stdout_lines }}"
+root@jaiganesh-Inspiron-N5050:/home/jaiganesh/ansible# yamllint aix_precheck.yml
+aix_precheck.yml
+  6:17      warning  truthy value is not quoted  (truthy)
+  16:30     error    trailing spaces  (trailing-spaces)
+  25:81     error    line too long (82 > 80 characters)  (line-length)
+  30:5      error    syntax error: expected <block end>, but found '<block sequence start>'
+  37:9      error    wrong indentation: expected 9 but found 8  (indentation)
+  42:28     error    trailing spaces  (trailing-spaces)
+  48:20     error    trailing spaces  (trailing-spaces)
+  50:9      error    wrong indentation: expected 9 but found 8  (indentation)
+  55:20     error    trailing spaces  (trailing-spaces)
+  57:9      error    wrong indentation: expected 9 but found 8  (indentation)
+  92:9      error    wrong indentation: expected 9 but found 8  (indentation)
+  99:9      error    wrong indentation: expected 9 but found 8  (indentation)
+  116:29    error    trailing spaces  (trailing-spaces)
+  118:9     error    wrong indentation: expected 9 but found 8  (indentation)
+  128:13    error    wrong indentation: expected 9 but found 12  (indentation)
+  143:29    error    trailing spaces  (trailing-spaces)
+  145:9     error    wrong indentation: expected 9 but found 8  (indentation)
+  155:1     error    trailing spaces  (trailing-spaces)
+  158:9     error    wrong indentation: expected 9 but found 8  (indentation)
+  158:15    error    too many spaces after colon  (colons)
+  158:81    error    line too long (81 > 80 characters)  (line-length)
+  162:9     error    wrong indentation: expected 9 but found 8  (indentation)
+  180:41    error    trailing spaces  (trailing-spaces)
+
+root@jaiganesh-Inspiron-N5050:/home/jaiganesh/ansible# vim aix_precheck.yml
+root@jaiganesh-Inspiron-N5050:/home/jaiganesh/ansible# cat aix_precheck.yml 
+---
+- hosts: all
+  remote_user: "{{ lookup('env','USER') }}"
+  become: true
+  become_user: root
+  gather_facts: yes
+  vars:
+     dir_path: /tmp
+
+  tasks:
+
+     - name: "Getting current timestamp"
+       set_fact:
+          timestamp_fact: "{{ lookup('pipe', 'date +%Y-%m-%d') }}"
+
+     - name: Create directory 
+       file:
+          path: "{{ dir_path }}/{{ timestamp_fact }}"
+          state: directory
+          mode: 0755
+       delegate_to: "127.0.0.1"
+
+     - name: Create file
+       file:
+          path: "{{ dir_path }}/{{ timestamp_fact }}/{{ inventory_hostname }}.txt"
+          state: touch
+          mode: 0755
+       delegate_to: "127.0.0.1"
+
+     - name: Mount points
+       command: df -k
+       register: mnts
+       ignore_errors: true
+
+    - name: get hdisk
+      aix_list_devices:
+        name: disk
+      register: disk_info
+      become: true
+      ignore_errors: true
+
+    - name: get lspv output 
+      command: lspv
+      register: pvs
+      become: true
+      ignore_errors: true
+
+    - name: get fcs 
+      aix_list_devices:
+        name: fcs
+      register: fcs_info
+      become: true
+      ignore_errors: true
+
+    - name: get ent 
+      aix_list_devices:
+        name: ent
+      register: ent_info
+      become: true
+      ignore_errors: true
+
+    - name: get Path
+      command: lspath
+      register: paths
+      become: true
+      ignore_errors: true
+
+    - name: last boot disk
+      command: bootinfo -b
+      register: lastbootdisk
+      become: true
+      ignore_errors: true
+
+    - name: get lsvg output
+      aix_list_vg:
+         name: all
+         state: all
+      register: lsvg
+      become: true
+      ignore_errors: true
+
+    - name: get active lsvg output
+      aix_list_vg:
+         name: all
+         state: active
+      register: lsvgactive
+      become: true
+      ignore_errors: true
+
+    - name: Get closed LVs
+      aix_list_lv:
+        name: all
+        state: closed
+      register: closedlvs
+      ignore_errors: true
+
+    - name: Get stale LVs
+      aix_list_lv:
+        name: all
+        state: stale
+      register: stalelvs
+      ignore_errors: true
+
+    - name: get ifconfig -a output
+      command: ifconfig -a
+      register: ifconfig
+      become: true
+      ignore_errors: true
+
+    - name: get route output
+      command: netstat -rn
+      register: route
+      become: true
+      ignore_errors: true
+
+    - name: get etherchannel 
+      aix_list_devices:
+        name: port
+      register: eth_channel_info
+      become: true
+      ignore_errors: true
+
+    - name: lparstat
+      command: lsattr -E -a backup_adapter -l {{ item }}
+      register: lparstat
+      become: true
+      with_items:
+            - "{{ eth_channel_info }}"
+      ignore_errors: true
+
+    - name: lparstat
+      command: lparstat -i
+      register: lparstat
+      become: true
+      ignore_errors: true
+
+    - name: showmount
+      command: showmount -a
+      register: showmount
+      become: true
+      ignore_errors: true
+
+    - name: get etherchannel 
+      aix_list_devices:
+        name: iocp
+      register: iocp
+      become: true
+      ignore_errors: true
+
+    - name: List paging space
+      command: lsps -a
+      register: paging
+      become: true
+      ignore_errors: true
+      
+    - name: Copy the  output to the newly created file
+      lineinfile:
+        dest:  "{{ dir_path }}/{{ timestamp_fact }}/{{ inventory_hostname }}.txt"
+        line: "{{ item.stdout | length}}"
+      delegate_to: "127.0.0.1"
+      with_items:
+        - "mounted filesystems: {{ mnts.stdout_lines|length }}"
+        - "Total Disk: {{ disk_info.stdout_lines|length }}"
+        - "lspv: {{ pvs.stdout_lines|length }}"
+        - "Total fcs: {{ fcs_info.stdout_lines|length }}"
+        - "Total ent: {{ ent_info.stdout_lines|length }}"
+        - "lspath: {{ paths.stdout_lines|length }}"
+        - "Last boot disk: {{ lastbootdisk.stdout_lines|length }}"
+        - "Total lsvg: {{ lsvg.stdout_lines|length }}"
+        - "Active vg: {{ lsvgactive.stdout_lines|length }}"
+        - "Closed lvs: {{ lsvgactive.stdout_lines|length }}"
+        - "Stale lvs: {{ lsvgactive.stdout_lines|length }}"
+        - "ifconfig details"
+        - "{{ ifconfig.stdout_lines }}"
+        - "Route details"
+        - "{{ route.stdout_lines }}"
+        - "Lparstat-i"
+        - "{{ lparstat.stdout_lines }}"
+        - "Showmount"
+        - "{{ showmount.stdout_lines }}" 
+        - "icop"
+        - "{{ iocp.stdout_lines }}"
+        - "paging"
+        - "{{ paging.stdout_lines }}"
