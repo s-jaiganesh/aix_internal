@@ -1,17 +1,27 @@
-rootvg:
-LV NAME             TYPE       LPs     PPs     PVs  LV STATE      MOUNT POINT
-hd5                 boot       1       1       1    closed/syncd  N/A
-hd6                 paging     128     128     1    open/syncd    N/A
-hd8                 jfs2log    1       1       1    open/syncd    N/A
-hd4                 jfs2       16      16      1    open/syncd    /
-hd2                 jfs2       128     128     1    open/syncd    /usr
-hd9var              jfs2       128     128     1    open/syncd    /var
-hd3                 jfs2       80      80      1    open/syncd    /tmp
-hd1                 jfs2       16      16      1    open/syncd    /home
-hd10opt             jfs2       80      80      1    open/syncd    /opt
-hd11admin           jfs2       1       1       1    open/syncd    /admin
-lg_dumplv           sysdump    43      43      1    open/syncd    N/A
-livedump            jfs2       2       2       1    open/syncd    /var/adm/ras/livedump
-loglv00             jfslog     1       1       1    closed/syncd  N/A
-tracklv             jfs2       16      16      1    open/syncd    /track
-auditlv             jfs2       32      32      1    open/syncd    /audit
+Repo pc_repo forced skip_if_unavailable=True due to: /etc/puppetlabs/puppet/ssl/private_keys/augpcpdspcapp03.genpt.net.pem
+ CVE-2020-11008 Important/Sec. git-1.8.3.1-23.el7_8.x86_64
+ CVE-2017-18595 Important/Sec. kernel-3.10.0-1127.8.2.el7.x86_64
+ CVE-2019-19768 Important/Sec. kernel-3.10.0-1127.8.2.el7.x86_64
+ CVE-2020-10711 Important/Sec. kernel-3.10.0-1127.8.2.el7.x86_64
+ CVE-2017-18595 Important/Sec. kernel-devel-3.10.0-1127.8.2.el7.x86_64
+ CVE-2019-19768 Important/Sec. kernel-devel-3.10.0-1127.8.2.el7.x86_64
+ CVE-2020-10711 Important/Sec. kernel-devel-3.10.0-1127.8.2.el7.x86_64
+ CVE-2017-18595 Important/Sec. kernel-headers-3.10.0-1127.8.2.el7.x86_64
+ CVE-2019-19768 Important/Sec. kernel-headers-3.10.0-1127.8.2.el7.x86_64
+ CVE-2020-10711 Important/Sec. kernel-headers-3.10.0-1127.8.2.el7.x86_64
+ CVE-2017-18595 Important/Sec. kernel-tools-3.10.0-1127.8.2.el7.x86_64
+ CVE-2019-19768 Important/Sec. kernel-tools-3.10.0-1127.8.2.el7.x86_64
+ CVE-2020-10711 Important/Sec. kernel-tools-3.10.0-1127.8.2.el7.x86_64
+ CVE-2017-18595 Important/Sec. kernel-tools-libs-3.10.0-1127.8.2.el7.x86_64
+ CVE-2019-19768 Important/Sec. kernel-tools-libs-3.10.0-1127.8.2.el7.x86_64
+ CVE-2020-10711 Important/Sec. kernel-tools-libs-3.10.0-1127.8.2.el7.x86_64
+ CVE-2020-11008 Important/Sec. perl-Git-1.8.3.1-23.el7_8.noarch
+ CVE-2017-18595 Important/Sec. python-perf-3.10.0-1127.8.2.el7.x86_64
+ CVE-2019-19768 Important/Sec. python-perf-3.10.0-1127.8.2.el7.x86_64
+ CVE-2020-10711 Important/Sec. python-perf-3.10.0-1127.8.2.el7.x86_64
+ CVE-2018-18074 Moderate/Sec.  python3-pip-9.0.3-7.el7_8.noarch
+ CVE-2018-20060 Moderate/Sec.  python3-pip-9.0.3-7.el7_8.noarch
+ CVE-2019-11236 Moderate/Sec.  python3-pip-9.0.3-7.el7_8.noarch
+ CVE-2019-11324 Moderate/Sec.  python3-pip-9.0.3-7.el7_8.noarch
+Loaded plugins: product-id, subscription-manager
+2020-06-16 04:42:48,843 [WARNING] yum:49773:Dummy-1 @logutil.py:142 - logging already initialized
