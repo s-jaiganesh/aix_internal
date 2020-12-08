@@ -45,7 +45,7 @@ def _update_all(module, preview, path):
     else:
         udpate_all_cmd = "%s '%s' %s '%s' " % (cmd, '-d', path, '-pY')
 
-    rc, out, err = module.run_command("%s -d %s -pY" % (udpate_all_cmd, path))    
+    rc, out, err = module.run_command("%s" % (udpate_all_cmd))    
     if rc is 0:
         msg = "command: %s preview: %s has completed successfully" % (udpate_all_cmd, preview)
         result = { 'stdout' : out, 'stderr' : err, 'rc' : rc, 'changed' : True, 'msg' : msg }
