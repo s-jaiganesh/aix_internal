@@ -51,7 +51,7 @@ def _update_all(module, preview, path):
         result = { 'stdout' : out, 'stderr' : err, 'rc' : rc, 'changed' : True, 'msg' : msg }
         module.exit_json(**result)
     else:
-        msg = "command: %s preview: %s has completed successfully" % (udpate_all_cmd, preview)
+        msg = "command: %s preview: %s has not completed successfully" % (udpate_all_cmd, preview)
         result = { 'stdout' : out, 'stderr' : err, 'rc' : rc, 'changed' : False, 'msg' : msg }
         module.exit_json(**result)
 
