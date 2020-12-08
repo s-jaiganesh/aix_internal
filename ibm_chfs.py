@@ -1,0 +1,38 @@
+from ansible.module_utils.basic import AnsibleModule
+
+EXAMPLES = r'''
+- name: FS increase command in MB
+  ibm_chfs:
+    size: 512
+    fs_name: /var
+       
+'''
+def _chfs(module, fs_size, fs_name):
+    chfs_cmd = module.get_bin_path('chfs', True)
+    rc, chfs_out, err = module.run_command("%s -a size=%s %s" % (chfs_cmd, fs_size, fs_name))
+    
+    if rc == 0:
+        result = { 'stdout' : chfs_out, 'rc' : rc, 'stderr': err, 'changed' : True, 'msg' : 'the chfs command completed successfully' }
+ 
+        module.exit_json(**result)
+    else:
+        result = { 'stdout' : chfs_out, 'rc' : rc, 'stderr': '', 'changed' : False, 'msg' : 'the chfs command not completed successfully' }
+
+        module.fail_json(**result)
+
+def main():
+    module = AnsibleModule(
+        argument_spec=dict(
+            size=dict(type='int', required=True),
+            fs_name=dict(type='str', required=True),
+
+        ),
+        supports_check_mode=True,
+    )
+    fs_size = module.params['size']
+    fs_name = module.params['fs_name']
+
+    _chfs(module, fs_size, fs_name)
+
+if __name__ == '__main__':
+    main()
