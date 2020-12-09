@@ -38,7 +38,6 @@ EXAMPLES = r'''
   emgr:
     package: /mnt/IJ11544s0a.181127.epkg.Z
     state: present
-
 - name: Remove ifix with label IJ11544s0a
   emgr:
     label: IJ11544s0a
@@ -161,8 +160,8 @@ def _remove_all_efix_pkg_preview(module, preview):
             else:
                 module.exit_json(msg="Empty array")
     else:
-            result = { 'stdout' : _out, 'stdout_lines' : _out, 'rc' : 0, 'stderr': '', 'changed' : False, 'msg' : 'There is no efix data on this system' }
-            module.exit_json(**result)
+        result = { 'stdout' : _out, 'stdout_lines' : _out, 'rc' : 0, 'stderr': '', 'changed' : False, 'msg' : 'There is no efix data on this system' }
+        module.exit_json(**result)
   
 def main():
     module = AnsibleModule(
@@ -174,15 +173,13 @@ def main():
 
         ),
         supports_check_mode=True,
-    )
-    
+    )    
     label = module.params['label']
     package = module.params['package']
     state = module.params['state']
     preview = module.params['preview']
     
     if state == 'present':
-
         if package is None:
             module.fail_json(msg="package path/filename is required to install ifix")
 		
@@ -204,13 +201,12 @@ def main():
             else:
                 module.fail_json(msg = ("Failed to install ifix from %s" % package))
 
-    elif state == 'absent':
-		
+    elif state == 'absent':		
 
         if label is None:
             module.fail_json(msg = "Ifix label is required to uninstall ifix")
 		
-        if 	label == "all":
+        if label == "all":
             _remove_all_efix_pkg_preview(module, preview)        
         elif _ifix_installed(label):
             if not module.check_mode and _remove_ifix_pkg(label):
@@ -226,10 +222,8 @@ def main():
             msg = ("Ifix is not installed: %s" % label)
     else:
         changed = False
-            msg = "Unexpected state."
-            module.fail_json(msg=msg)
-
-        module.exit_json(changed=changed, msg=msg)        
+        msg = "Unexpected state."
+        module.fail_json(msg=msg)
         
 if __name__ == '__main__':
     main()
