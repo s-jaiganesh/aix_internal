@@ -193,6 +193,7 @@ def main():
         if _ifix_installed(label):
             changed = False
             msg = ("Ifix already installed: %s" % label)
+	    module.exit_json(msg)
         else:
             if _install_ifix_pkg(package):
                 changed = True
