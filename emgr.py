@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import, division, print_function
+import re
+import subprocess
 __metaclass__ = type
 
 ANSIBLE_METADATA = {
@@ -192,12 +194,9 @@ def main():
             changed = False
             msg = ("Ifix already installed: %s" % label)
         else:
-            if not module.check_mode and _install_ifix_pkg(package):
+            if _install_ifix_pkg(package):
                 changed = True
-                msg = ("IFIX package with label {0} has been installed".format(label))
-            elif module.check_mode:
-                changed = True
-                msg = ("IFIX package with label {0} would be installed".format(label))
+                module.exit_json(msg = ("IFIX package %s has been installed" % package))            
             else:
                 module.fail_json(msg = ("Failed to install ifix from %s" % package))
 
@@ -211,15 +210,15 @@ def main():
         elif _ifix_installed(label):
             if not module.check_mode and _remove_ifix_pkg(label):
                 changed = True
-                msg = ("IFIX package with label {0} has been removed".format(label))
+                module.exit_json(msg = ("IFIX package with label {0} has been removed".format(label)))
             elif module.check_mode:
                 changed = True
-                msg = ("IFIX package with label {0} would be removed".format(label))
+                module.exit_json(msg = ("IFIX package with label {0} would be removed".format(label)))
             else:
                 module.fail_json(msg = ("Failed to uninstall ifix %s" % label))
         else:
             changed = False
-            msg = ("Ifix is not installed: %s" % label)
+            module.exit_json(msg = ("Ifix is not present: %s" % label))
     else:
         changed = False
         msg = "Unexpected state."
