@@ -70,22 +70,21 @@ def bootlist(module):
     bootlist_cmd = module.get_bin_path('bootlist', True)
     
     if len(pvs_to_set_bootlist) == 2:
-        
-        for disk in pvs_to_set_bootlist:
-            rc, out, err = module.run_command("%s -m normal %s %s" % (bootlist_cmd, (hdisk[0]), (hdisk[1])))
-            if rc != 0:
-                changed = False
-                err = err.rstrip(b"\r\n")
-                stderr=err
-                rc=rc
-                module.fail_json(msg="88:Failing to execute '%s' command." % bootlist_cmd)
-            else:
-                out = out.rstrip(b"\r\n")
-                stdout=out
-                rc=rc
-                changed = True
-                bootlist_msg = "Bootlist has been set successfully"
-                module.exit_json(msg="bootlist set successfully")
+
+        rc, out, err = module.run_command("%s -m normal %s %s" % (bootlist_cmd, (pvs_to_set_bootlist[0]), (pvs_to_set_bootlist[1])))
+        if rc != 0:
+            changed = False
+            err = err.rstrip(b"\r\n")
+            stderr=err
+            rc=rc
+            module.fail_json(msg="88:Failing to execute '%s' command." % bootlist_cmd)
+        else:
+            out = out.rstrip(b"\r\n")
+            stdout=out
+            rc=rc
+            changed = True
+            bootlist_msg = "Bootlist has been set successfully"
+            module.exit_json(msg="bootlist set successfully")
 
     elif len(pvs_to_set_bootlist) == 1:
         
