@@ -123,7 +123,8 @@ def main():
     if module.params['state'] == 'present':
         bosboot_return = bosboot(module)
         if module.params['bootlist'] is True and bosboot_return:
-            out_value, out, diskname = bootlist(module)
+            diskname, out, out_value = bootlist(module)
+            #out_value, out, diskname = bootlist(module)
             if out_value:
                 msg = "bosboot command executed and bootlist set successfully on disk %s with output of %s"  % (diskname, out)
                 module.exit_json(msg=msg)
