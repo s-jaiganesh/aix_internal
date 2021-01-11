@@ -42,14 +42,14 @@ def bosboot(module):
         err = err.rstrip(b"\r\n")
         stderr=err
         rc=rc
-        module.exit_json(msg="unable to run %s command." % bosboot_cmd)
+        return False        
     else:             
         out = out.rstrip(b"\r\n")
         stdout=out
         rc=rc
         changed = True
         bosboot_msg = "bosboot to executed"
-        module.exit_json(msg="successfully executed")
+        return True
     
 def bootlist(module):      
         
@@ -63,8 +63,8 @@ def bootlist(module):
     for line in hd5_pvs.splitlines():
         if 'hdisk' in line:
             fields = line.strip().split()
-            pvs_to_set_bootlist.append(fields[0])
-            hdisk = fields[0]
+            pvs_to_set_bootlist.append(fields[2])
+            hdisk = fields[2]
             state = fields[1]
     
     bootlist_cmd = module.get_bin_path('bootlist', True)
@@ -77,14 +77,14 @@ def bootlist(module):
             err = err.rstrip(b"\r\n")
             stderr=err
             rc=rc
-            module.fail_json(msg="88:Failing to execute '%s' command." % bootlist_cmd)
+            return False
         else:
             out = out.rstrip(b"\r\n")
             stdout=out
             rc=rc
             changed = True
             bootlist_msg = "Bootlist has been set successfully"
-            module.exit_json(msg="bootlist set successfully")
+            return True
 
     elif len(pvs_to_set_bootlist) == 1:
         
@@ -94,14 +94,14 @@ def bootlist(module):
             err = err.rstrip(b"\r\n")
             stderr=err
             rc=rc
-            module.fail_json(msg="104:Failing to execute '%s' command." % bootlist_cmd)
+            return False
         else:
             out = out.rstrip(b"\r\n")
             stdout=out
             rc=rc
             changed = True
             bootlist_msg = "Bootlist has been set successfully"
-            module.exit_json(msg="bootlist set successfully")
+            return True
     else:
         changed = False
         bootlist_msg = "No Boot image present on any PV"
@@ -120,11 +120,17 @@ def main():
         supports_check_mode=True,
     )
     if module.params['state'] == 'present':
-        bosboot(module)
-        if module.params['bootlist'] is True:
-            bootlist(module)
+        bosboot_return = bosboot(module)
+        if module.params['bootlist'] is True and bosboot_return:
+            bootlist_return = bootlist(module)
+            if bootlist_return:
+                module.exit_json(msg="bosboot command executed and bootlist set successfully")
+            else:
+                module.fail_json(msg="bosboot command executed and bootlist not set successfully")
+        elif bosboot_return == 'False':
+            module.fail_json(msg="bosboot command not executed successfully")
         else:
-            module.fail_json(msg="Not valid input")
+            module.fail_json(msg="unknown error")
     else:
         module.fail_json(msg="Not valid input")
         
