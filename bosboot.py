@@ -102,15 +102,12 @@ def bootlist(module):
             rc=rc
             changed = True
             bootlist_msg = "Bootlist has been set successfully"
-            return diskname, out, True
+            out_value = True
+            return diskname, out, out_value
     else:
         changed = False
         bootlist_msg = "No Boot image present on any PV"
-        module.fail_json(msg="114:Failing to execute '%s' command." % lslv_cmd)
-
-    msg = bootlist_msg
-    return changed, msg
-           
+        module.fail_json(msg="114:Failing to execute '%s' command." % lslv_cmd)         
     
 def main():
     module = AnsibleModule(
@@ -123,8 +120,8 @@ def main():
     if module.params['state'] == 'present':
         bosboot_return = bosboot(module)
         if module.params['bootlist'] is True and bosboot_return:
-            rc, out, diskname = bootlist(module)
-            if rc:
+            out_value, out, diskname = bootlist(module)
+            if out_value:
                 module.exit_json(msg="bosboot command executed and bootlist set successfully")
             else:
                 msg = "bosboot command executed and bootlist not set successfully reason is %s on disk name %s" % (out, diskname)
