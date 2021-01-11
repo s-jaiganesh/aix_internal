@@ -97,11 +97,12 @@ def bootlist(module):
             return False
         else:
             out = out.rstrip(b"\r\n")
+            diskname = pvs_to_set_bootlist[0]
             stdout=out
             rc=rc
             changed = True
             bootlist_msg = "Bootlist has been set successfully"
-            return True
+            return diskname, out, True
     else:
         changed = False
         bootlist_msg = "No Boot image present on any PV"
@@ -122,11 +123,12 @@ def main():
     if module.params['state'] == 'present':
         bosboot_return = bosboot(module)
         if module.params['bootlist'] is True and bosboot_return:
-            bootlist_return = bootlist(module)
-            if bootlist_return:
+            rc, out, diskname = bootlist(module)
+            if rc:
                 module.exit_json(msg="bosboot command executed and bootlist set successfully")
             else:
-                module.fail_json(msg="bosboot command executed and bootlist not set successfully")
+                msg = "bosboot command executed and bootlist not set successfully reason is %s on disk name %s" % (out, diskname)
+                module.fail_json(msg=msg)
         elif bosboot_return == 'False':
             module.fail_json(msg="bosboot command not executed successfully")
         else:
