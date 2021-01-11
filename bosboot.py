@@ -94,7 +94,10 @@ def bootlist(module):
             err = err.rstrip(b"\r\n")
             stderr=err
             rc=rc
-            return False
+            diskname = pvs_to_set_bootlist[0]
+            bootlist_msg = "Bootlist not set successfully"
+            out_value = False
+            return diskname, out, out_value
         else:
             out = out.rstrip(b"\r\n")
             diskname = pvs_to_set_bootlist[0]
