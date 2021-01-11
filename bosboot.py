@@ -125,7 +125,8 @@ def main():
         if module.params['bootlist'] is True and bosboot_return:
             out_value, out, diskname = bootlist(module)
             if out_value:
-                module.exit_json(msg="bosboot command executed and bootlist set successfully")
+                msg = "bosboot command executed and bootlist set successfully on disk %s with output of %s"  % (diskname, out)
+                module.exit_json(msg=msg)
             else:
                 msg = "bosboot command executed and bootlist not set successfully reason is %s on disk name %s" % (out, diskname)
                 module.fail_json(msg=msg)
