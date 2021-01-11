@@ -63,8 +63,8 @@ def bootlist(module):
     for line in hd5_pvs.splitlines():
         if 'hdisk' in line:
             fields = line.strip().split()
-            pvs_to_set_bootlist.append(fields[2])
-            hdisk = fields[2]
+            pvs_to_set_bootlist.append(fields[0])
+            hdisk = fields[0]
             state = fields[1]
     
     bootlist_cmd = module.get_bin_path('bootlist', True)
@@ -126,10 +126,10 @@ def main():
             diskname, out, out_value = bootlist(module)
             #out_value, out, diskname = bootlist(module)
             if out_value:
-                msg = "bosboot command executed and bootlist set successfully on disk %s with output of %s"  % (diskname, out)
+                msg = "bosboot command executed and bootlist set successfully" 
                 module.exit_json(msg=msg)
             else:
-                msg = "bosboot command executed and bootlist not set successfully reason is %s on disk name %s" % (out, diskname)
+                msg = "bosboot command executed and bootlist not set successfully"
                 module.fail_json(msg=msg)
         elif bosboot_return == 'False':
             module.fail_json(msg="bosboot command not executed successfully")
